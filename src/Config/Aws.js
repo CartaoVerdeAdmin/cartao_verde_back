@@ -5,9 +5,7 @@ import {
   PutObjectCommand,
   S3Client,
 } from "@aws-sdk/client-s3";
-import dotenv from "dotenv";
 import { v4 as uuidv4 } from "uuid";
-dotenv.config();
 
 const region = process.env.AWS_BUCKET_REGION;
 const accessKeyId = process.env.AWS_ACCESS_KEY;
