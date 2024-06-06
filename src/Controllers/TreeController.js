@@ -18,7 +18,7 @@ class TreeController {
       );
 
       const archiveID = await ArchiveController.create({ ...archives });
-      const memorial = await TreeModel.create({
+      const myTree = await TreeModel.create({
         title,
         shortDescription,
         longDescription,
@@ -26,7 +26,7 @@ class TreeController {
         id_categoryType: categoryTypeIds,
         archive: archiveID,
       });
-      return res.status(200).json(memorial);
+      return res.status(200).json(myTree);
     } catch (error) {
       res.status(500).json({ message: "Error while creating archive", error: error.message });
     }
@@ -34,27 +34,27 @@ class TreeController {
 
   async read(req, res) {
     try {
-      const memorial = await TreeModel.find().populate("archive").populate("id_categoryType");
+      const myTree = await TreeModel.find().populate("archive").populate("id_categoryType");
 
-      return res.status(200).json(memorial);
+      return res.status(200).json(myTree);
     } catch (error) {
       res
         .status(500)
-        .json({ message: "Error while fetching memorial cards", error: error.message });
+        .json({ message: "Error while fetching myTree cards", error: error.message });
     }
   }
 
   async checkFavorited(req, res) {
     try {
-      const { userId, memorialId, enabled } = req.query;
+      const { userId, myTreeId, enabled } = req.query;
       let isFavorited = false;
       if (enabled && enabled.toLowerCase() === "false") {
         return res.status(200).json(isFavorited);
       }
-      const user = await UserModel.findById(userId).select("favoritesMemorials");
+      const user = await UserModel.findById(userId).select("favoritesmyTrees");
       if (!user) return res.status(404).json({ message: "User not found" });
 
-      isFavorited = user.favoritesMemorials.includes(memorialId);
+      isFavorited = user.favoritesmyTrees.includes(myTreeId);
       res.status(200).json(isFavorited);
     } catch (error) {
       res.status(500).json({ message: "Error while fetching User", error: error.message });
@@ -80,7 +80,7 @@ class TreeController {
           return categoryType ? categoryType._id : null;
         })
       );
-      const memorial = await TreeModel.findByIdAndUpdate(id, {
+      const myTree = await TreeModel.findByIdAndUpdate(id, {
         title,
         shortDescription,
         longDescription,
@@ -97,8 +97,8 @@ class TreeController {
   async delete(req, res) {
     try {
       const { id } = req.params;
-      const memorial = await TreeModel.findById(id);
-      await ArchiveController.deleteArchives(memorial.archive);
+      const myTree = await TreeModel.findById(id);
+      await ArchiveController.deleteArchives(myTree.archive);
       await TreeModel.findByIdAndDelete(id);
       return res.status(200).json({ messsage: "Archive deleted successfully!" });
     } catch (error) {
@@ -111,13 +111,13 @@ class TreeController {
   async filterCategories(req, res) {
     try {
       const { dateRange } = req.query;
-      let memorials = [];
-      memorials = await TreeModel.find();
+      let myTrees = [];
+      myTrees = await TreeModel.find();
       if (dateRange && dateRange.initialDate && dateRange.finalDate) {
-        memorials = memorials.filter(
-          (memorial) =>
-            memorial.createdAt >= new Date(dateRange.initialDate) &&
-            memorial.createdAt <= new Date(dateRange.finalDate)
+        myTrees = myTrees.filter(
+          (myTree) =>
+            myTree.createdAt >= new Date(dateRange.initialDate) &&
+            myTree.createdAt <= new Date(dateRange.finalDate)
         );
       } else if (dateRange && dateRange.oneDate) {
         const oneDate = new Date(dateRange.oneDate);
@@ -132,14 +132,14 @@ class TreeController {
           59
         );
 
-        memorials = memorials.filter(
-          (memorial) => memorial.createdAt >= startOfDay && memorial.createdAt <= endOfDay
+        myTrees = myTrees.filter(
+          (myTree) => myTree.createdAt >= startOfDay && myTree.createdAt <= endOfDay
         );
       }
-      const uniqueMemorialObjects = () => {
+      const uniquemyTreeObjects = () => {
         const mapIds = new Map();
         const UniqueArray = [];
-        memorials.forEach((obj) => {
+        myTrees.forEach((obj) => {
           if (!mapIds.has(obj._id)) {
             mapIds.set(obj._id, true);
             UniqueArray.push(obj);
@@ -148,17 +148,17 @@ class TreeController {
         return UniqueArray;
       };
 
-      let filteredMemorials = uniqueMemorialObjects();
-      const populatedPromises = filteredMemorials.map(async (memorial) => {
-        const populatedMemorial = await TreeModel.populate(memorial, "archive id_categoryType");
-        return populatedMemorial;
+      let filteredmyTrees = uniquemyTreeObjects();
+      const populatedPromises = filteredmyTrees.map(async (myTree) => {
+        const populatedmyTree = await TreeModel.populate(myTree, "archive id_categoryType");
+        return populatedmyTree;
       });
 
-      filteredMemorials = await Promise.all(populatedPromises);
+      filteredmyTrees = await Promise.all(populatedPromises);
 
-      return res.status(200).json(filteredMemorials);
+      return res.status(200).json(filteredmyTrees);
     } catch (error) {
-      res.status(500).json({ message: "Error while filtering memorials", error: error.message });
+      res.status(500).json({ message: "Error while filtering myTrees", error: error.message });
     }
   }
 }

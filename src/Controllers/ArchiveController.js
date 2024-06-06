@@ -99,17 +99,6 @@ class ArchiveController {
       throw error;
     }
   }
-  async updateEvent(req, res) {
-    try {
-      await this.deleteArchives(req.oldArchives._id);
-      const id = await this.create({
-        title: req.name,
-        archives: { name: req.files.name, base64: req.files.base64 },
-      });
-
-      return id;
-    } catch (error) {}
-  }
 }
 
 export default new ArchiveController();

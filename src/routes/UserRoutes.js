@@ -15,10 +15,6 @@ userRoutes
   .put(verifyJwt, verifyIsAdm, UserValidator.update, UserController.update);
 
 userRoutes
-  .route("/favoritesEvents/:userId")
-  .put(verifyJwt, UserController.updateFavoritesEvents)
-  .get(UserController.readFavoritesEvents);
-userRoutes
   .route("/favoritesTrees/:userId")
   .put(verifyJwt, UserController.updateFavoritesTrees)
   .get(UserController.readFavoritesTrees);
