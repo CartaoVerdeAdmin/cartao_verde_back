@@ -1,5 +1,4 @@
 import TreeModel from "../Models/TreeModel.js";
-import EventModel from "../Models/EventModel.js";
 import UserModel from "../Models/UserModel.js";
 import jwt from "jsonwebtoken";
 
