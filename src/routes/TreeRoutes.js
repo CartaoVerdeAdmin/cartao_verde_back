@@ -9,7 +9,7 @@ const treeRoutes = Router();
 treeRoutes.route("/treeCards").post(TreeValidator.read, TreeController.read);
 
 treeRoutes
-  .route("/")
+  .route("/tree")
   .post(TreeValidator.create, TreeController.create)
   .get(TreeValidator.read, TreeController.read);
 

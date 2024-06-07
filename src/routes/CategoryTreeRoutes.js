@@ -5,7 +5,7 @@ import CategoryController from "../Controllers/CategoryTreeController.js";
 const categoryTreeRoutes = Router();
 
 categoryTreeRoutes
-  .route("/")
+  .route("/categoryTree")
   .get(CategoryController.read)
   .post(CategoryTreeValidator.create, CategoryController.create);
 
