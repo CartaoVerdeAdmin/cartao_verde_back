@@ -1,11 +1,12 @@
 import cluster from "cluster";
+import os from "os";
 
 import isDevEnvironment from "../Utils/general/isDevEnvironment.js";
 import logger from "./logger.js";
 import startServer from "./Server/startServer.js";
 
 function runPrimaryProcess() {
-  const processesCount = process.env.CPUS || require("os").cpus().length;
+  const processesCount = process.env.CPUS || os.cpus().length;
 
   for (let index = 0; index < processesCount; index += 1) cluster.fork();
 
