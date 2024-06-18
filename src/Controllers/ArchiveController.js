@@ -32,8 +32,9 @@ class ArchiveController {
 
   async create(req, res) {
     try {
-      const archives = Array.isArray(req.archives) ? req.archives : [req.archives];
+      const archives = Array.isArray(req.archive) ? req.archive : [req.archive];
       const archiveIds = [];
+
 
       for (let i = 0; i < archives.length; i++) {
         const file = archives[i].base64;
