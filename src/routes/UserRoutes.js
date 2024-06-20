@@ -14,9 +14,4 @@ userRoutes
   .delete(verifyJwt, verifyIsAdm, UserValidator.destroy, UserController.destroy)
   .put(verifyJwt, verifyIsAdm, UserValidator.update, UserController.update);
 
-userRoutes
-  .route("/favoritesTrees/:userId")
-  .put(verifyJwt, UserController.updateFavoritesTrees)
-  .get(UserController.readFavoritesTrees);
-
 export default userRoutes;

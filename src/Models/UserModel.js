@@ -19,14 +19,9 @@ const UserSchema = new Schema({
     trim: true,
   },
   type: {
-    type: String,
+    type: Boolean,
     required: false,
     default: false,
-  },
-  id_Trees: {
-    type: Schema.Types.UUID,
-    ref: "trees",
-    required: false,
   },
   id_certificates: {
     type: Schema.Types.UUID,
