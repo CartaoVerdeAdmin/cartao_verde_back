@@ -6,8 +6,7 @@ import CategoryTreeModel from "../Models/CategoryTreeModel.js";
 class TreeController {
   async create(req, res) {
     try {
-      const { title, shortDescription, longDescription, link, selectedOptions, ...archives } =
-        req.body;
+      const { name, location, imageURL, especire, selectedOptions, ...archives } = req.body;
 
       const categoryTypeIds = await Promise.all(
         selectedOptions.id_categoryType.map(async (categoryName) => {
@@ -19,11 +18,10 @@ class TreeController {
 
       const archiveID = await ArchiveController.create({ ...archives });
       const myTree = await TreeModel.create({
-        title,
-        shortDescription,
-        longDescription,
-        link,
-        id_categoryType: categoryTypeIds,
+        name,
+        location,
+        imageURL,
+        especire,
         archive: archiveID,
       });
       return res.status(200).json(myTree);
@@ -38,9 +36,7 @@ class TreeController {
 
       return res.status(200).json(myTree);
     } catch (error) {
-      res
-        .status(500)
-        .json({ message: "Error while fetching myTree cards", error: error.message });
+      res.status(500).json({ message: "Error while fetching myTree cards", error: error.message });
     }
   }
 
