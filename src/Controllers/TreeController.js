@@ -6,41 +6,39 @@ import CategoryTreeModel from "../Models/CategoryTreeModel.js";
 class TreeController {
   async create(req, res) {
     try {
-      const { title, shortDescription, longDescription, link, selectedOptions, ...archives } =
-        req.body;
+      const { name, location, description, especire, id_category, price, ...archive } = req.body;
 
       const categoryTypeIds = await Promise.all(
-        selectedOptions.id_categoryType.map(async (categoryName) => {
+        id_category.map(async (categoryName) => {
           const categoryType = await CategoryTreeModel.findOne({ name: categoryName });
 
           return categoryType ? categoryType._id : null;
         })
       );
 
-      const archiveID = await ArchiveController.create({ ...archives });
+      const archiveID = await ArchiveController.create({ ...archive });
       const myTree = await TreeModel.create({
-        title,
-        shortDescription,
-        longDescription,
-        link,
-        id_categoryType: categoryTypeIds,
+        name,
+        location,
+        description,
+        price,
+        especire,
+        id_category:categoryTypeIds,
         archive: archiveID,
       });
       return res.status(200).json(myTree);
     } catch (error) {
-      res.status(500).json({ message: "Error while creating archive", error: error.message });
+      res.status(500).json({ message: "Error while creating Tree", error: error.message });
     }
   }
 
   async read(req, res) {
     try {
-      const myTree = await TreeModel.find().populate("archive").populate("id_categoryType");
+      const myTree = await TreeModel.find().populate("archive").populate("id_category");
 
       return res.status(200).json(myTree);
     } catch (error) {
-      res
-        .status(500)
-        .json({ message: "Error while fetching myTree cards", error: error.message });
+      res.status(500).json({ message: "Error while fetching Tree cards", error: error.message });
     }
   }
 
@@ -64,33 +62,27 @@ class TreeController {
   async update(req, res) {
     try {
       const { id } = req.params;
-      const { title, link, shortDescription, longDescription, selectedOptions, ...archivesObject } =
-        req.body;
+      const { name, location, description, especire, id_category, price, ...archivesObject } = req.body;
+
       const oldArchives = await TreeModel.findById(id).populate("archive");
       const archiveID = await ArchiveController.update({
-        files: archivesObject.archives,
-        name: title,
+        files: archivesObject.archive,
+        name: name,
         oldArchives: oldArchives.archive,
       });
-
-      const categoryTypeIds = await Promise.all(
-        selectedOptions.id_categoryType.map(async (categoryName) => {
-          const categoryType = await CategoryTreeModel.findOne({ name: categoryName });
-
-          return categoryType ? categoryType._id : null;
-        })
-      );
+      
       const myTree = await TreeModel.findByIdAndUpdate(id, {
-        title,
-        shortDescription,
-        longDescription,
-        link,
+        name,
+        location,
+        description,
         archive: archiveID,
-        id_categoryType: categoryTypeIds,
+        price,
+        especire,
+        id_category,
       });
       return res.status(200).json({});
     } catch (error) {
-      res.status(500).json({ message: "Error while updating archive", error: error.message });
+      res.status(500).json({ message: "Error while updating tree", error: error.message });
     }
   }
 
@@ -98,13 +90,10 @@ class TreeController {
     try {
       const { id } = req.params;
       const myTree = await TreeModel.findById(id);
-      await ArchiveController.deleteArchives(myTree.archive);
       await TreeModel.findByIdAndDelete(id);
-      return res.status(200).json({ messsage: "Archive deleted successfully!" });
+      return res.status(200).json({ messsage: "Tree deleted successfully!" });
     } catch (error) {
-      return res
-        .status(500)
-        .json({ message: "Error while deleting archive", error: error.message });
+      return res.status(500).json({ message: "Error while deleting tree", error: error.message });
     }
   }
 
