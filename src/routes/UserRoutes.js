@@ -17,6 +17,10 @@ userRoutes
 userRoutes
   .route("/favoritesTrees/:userId")
   .put(verifyJwt, UserController.updateFavoritesTrees)
-  .get(UserController.readFavoritesTrees);
+  .get(UserController.readFavoritesTrees)
+
+userRoutes
+  .route("/favoriteTrees/:userId/:treeId")
+  .post(verifyJwt, UserController.buyTrees);
 
 export default userRoutes;

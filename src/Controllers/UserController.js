@@ -130,6 +130,33 @@ class UserController {
       res.status(500).json({ message: "Erro ao atualizar favoritos", error: error.message });
     }
   }
+
+  async buyTrees(req, res) {
+    try{
+      const { userId, treeId } = req.params;
+
+      const user = await UserModel.findById(userId);
+      const tree = await TreeModel.findById(treeId);
+
+      if(!user){
+        return res.status(400).json({ message: "Usuário não encontrado." });
+      }
+      if(!tree){
+        return res.status(400).json({ message: "Árvore não encontrada." });
+      }
+
+      if(user.favoriteTrees.includes(treeId))
+        return res.status(400).json({ message: "Árvore já está inclusa nos favoritos"});
+
+      user.favoriteTrees.push(treeId);
+      await user.save();
+
+      res.status(200).json({ message: "Árvore comprada com sucesso! "});
+
+    } catch(error) {
+      res.status(500).json({ message: "Erro ao comprar a árvore!", error: error.mensagem});
+    }
+  }
 }
 
 export default new UserController();
