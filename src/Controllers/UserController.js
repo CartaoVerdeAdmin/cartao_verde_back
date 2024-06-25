@@ -1,6 +1,7 @@
 import TreeModel from "../Models/TreeModel.js";
 import UserModel from "../Models/UserModel.js";
 import jwt from "jsonwebtoken";
+import mongoose from "mongoose";
 
 class UserController {
   async login(req, res) {
@@ -131,30 +132,23 @@ class UserController {
     }
   }
 
-  async buyTrees(req, res) {
-    try{
-      const { userId, treeId } = req.params;
+  async ReadPurchasedTrees(req, res) {
+    try {
+      const { userId } = req.params;
 
-      const user = await UserModel.findById(userId);
-      const tree = await TreeModel.findById(treeId);
+      const user = await UserModel.findById(userId).select("purchasedTrees");
 
-      if(!user){
-        return res.status(400).json({ message: "Usuário não encontrado." });
-      }
-      if(!tree){
-        return res.status(400).json({ message: "Árvore não encontrada." });
-      }
+      const purchasedTreesIds = user.purchasedTrees || [];
 
-      if(user.favoriteTrees.includes(treeId))
-        return res.status(400).json({ message: "Árvore já está inclusa nos favoritos"});
+      const purchasedTreePromises = purchasedTreesIds.map(async (treeId) => {
+        const purchasedTree = await TreeModel.findById(treeId);
+        return purchasedTree;
+      });
 
-      user.favoriteTrees.push(treeId);
-      await user.save();
-
-      res.status(200).json({ message: "Árvore comprada com sucesso! "});
-
-    } catch(error) {
-      res.status(500).json({ message: "Erro ao comprar a árvore!", error: error.mensagem});
+      const purchasedTrees = await Promise.all(purchasedTreePromises);
+      res.status(200).json(purchasedTrees);
+    } catch (error) {
+      res.status(500).json({ message: "Erro ao mostrar árvores compradas", error: error.message });
     }
   }
 }

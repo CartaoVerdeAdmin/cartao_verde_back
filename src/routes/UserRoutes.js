@@ -20,7 +20,7 @@ userRoutes
   .get(UserController.readFavoritesTrees)
 
 userRoutes
-  .route("/favoriteTrees/:userId/:treeId")
-  .post(verifyJwt, UserController.buyTrees);
+  .route("/purchasedTrees/:userId")
+  .get(UserController.ReadPurchasedTrees);
 
 export default userRoutes;
