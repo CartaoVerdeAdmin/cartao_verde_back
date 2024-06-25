@@ -17,7 +17,7 @@ const destroy = validateRequest({
 });
 const update = validateRequest({
   body: z.object({
-    description: z.string(),
+    description: z.string().optional(),
   }),
 });
 
