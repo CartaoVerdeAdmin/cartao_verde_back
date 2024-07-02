@@ -24,7 +24,7 @@ const UserSchema = new Schema({
     default: false,
   },
   id_certificates: {
-    type: Schema.Types.UUID,
+    type: Schema.Types.ObjectId,
     ref: "certificates",
     required: false,
   },
