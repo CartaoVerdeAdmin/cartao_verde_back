@@ -6,17 +6,15 @@ import verifyIsAdm from "../Middlewares/VerifyisAdm.js";
 
 const userRoutes = Router();
 
-userRoutes.route("/").post(UserValidator.create, UserController.login).get(UserController.readAll);
+userRoutes
+  .route("/")
+  .post(UserValidator.create, UserController.login)
+  .get(verifyJwt, verifyIsAdm, UserController.readAll);
 
 userRoutes
   .route("/:id")
   .get(UserValidator.get, UserController.read)
   .delete(verifyJwt, verifyIsAdm, UserValidator.destroy, UserController.destroy)
   .put(verifyJwt, verifyIsAdm, UserValidator.update, UserController.update);
-
-userRoutes
-  .route("/favoritesTrees/:userId")
-  .put(verifyJwt, UserController.updateFavoritesTrees)
-  .get(UserController.readFavoritesTrees);
 
 export default userRoutes;

@@ -1,4 +1,3 @@
-import TreeModel from "../Models/TreeModel.js";
 import UserModel from "../Models/UserModel.js";
 import jwt from "jsonwebtoken";
 
@@ -31,25 +30,6 @@ class UserController {
       const { id } = req.params;
       const user = await UserModel.findById(id).select("-favoritesTrees");
       res.status(200).json(user);
-    } catch (error) {
-      res.status(500).json({ message: "Error while fetching User", error: error.message });
-    }
-  }
-
-  async readFavoritesTrees(req, res) {
-    try {
-      const { userId } = req.params;
-      const user = await UserModel.findById(userId).select("favoritesTrees");
-      if (!user) return res.status(404).json({ message: "User not found" });
-
-      const populatedPromises = user.favoritesTrees.map(async (treeId) => {
-        const populatedTree = await TreeModel.findById(treeId).populate("archive");
-
-        return populatedTree;
-      });
-
-      const populatedTrees = await Promise.all(populatedPromises);
-      res.status(200).json(populatedTrees);
     } catch (error) {
       res.status(500).json({ message: "Error while fetching User", error: error.message });
     }
@@ -94,42 +74,6 @@ class UserController {
     }
   }
 
-  async updateFavoritesTrees(req, res) {
-    try {
-      const { ids } = req.body;
-      const { userId } = req.params;
-
-      const user = await UserModel.findById(userId);
-
-      if (!user) {
-        return res.status(404).json({ message: "Usuário não encontrado" });
-      }
-
-      const currentFavorites = user.favoritesTrees.map(String);
-
-      const newFavorites = ids.filter((id) => !currentFavorites.includes(id));
-      const removedFavorites = currentFavorites.filter((id) => ids.includes(id));
-
-      await Promise.all(
-        newFavorites.map(async (id) => {
-          const event = await TreeModel.findById(id);
-          if (!event) {
-            return res.status(400).json({ message: `Evento com ID ${id} não encontrado` });
-          }
-          user.favoritesTrees.push(event);
-        })
-      );
-
-      user.favoritesTrees = user.favoritesTrees.filter(
-        (event) => !removedFavorites.includes(event.toString())
-      );
-      await user.save();
-
-      res.status(200).json({ message: "Favoritos atualizados com sucesso", user });
-    } catch (error) {
-      res.status(500).json({ message: "Erro ao atualizar favoritos", error: error.message });
-    }
-  }
 }
 
 export default new UserController();
