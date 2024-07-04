@@ -7,21 +7,19 @@ class ArchiveController {
     try {
       let { archive: ids } = req.query;
       ids = ids.split(", ");
-      const base64Strings = [];
-      for (const id of ids) {
+      const archivePromises = ids.map(async (id) => {
         const archive = await ArchiveModel.findById(id);
 
         if (!archive) {
-          return res.status(404).json({ message: `Archive with ID ${id} not found` });
+          throw new Error(`Archive with ID ${id} not found`);
         }
 
-        const urlSplit = archive.url.split("/");
-        const key = urlSplit.pop();
+        const key = archive.url.split("/").pop();
         const data = await getArchive(key);
+        return data;
+      });
 
-        const base64String = await data;
-        base64Strings.push(base64String);
-      }
+      const base64Strings = await Promise.all(archivePromises);
       return res.status(200).json(base64Strings);
     } catch (error) {
       return res
@@ -34,7 +32,6 @@ class ArchiveController {
     try {
       const archives = Array.isArray(req.archive) ? req.archive : [req.archive];
       const archiveIds = [];
-
 
       for (let i = 0; i < archives.length; i++) {
         const file = archives[i].base64;
