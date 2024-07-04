@@ -6,17 +6,15 @@ import verifyIsAdm from "../Middlewares/VerifyisAdm.js";
 
 const treeRoutes = Router();
 
-treeRoutes.route("/treeCards").get(TreeValidator.read, TreeController.read);
-
 treeRoutes
   .route("/")
-  .post(TreeValidator.create, TreeController.create)
-  .get(TreeValidator.read, TreeController.read);
+  .post(verifyJwt, TreeValidator.create, TreeController.create)
+  .get(verifyJwt, verifyIsAdm, TreeValidator.read, TreeController.read);
 
 treeRoutes
   .route("/:id")
-  .put(TreeValidator.update, TreeController.update)
-  .delete(TreeValidator.destroy, TreeController.delete);
+  .put(verifyJwt, TreeValidator.update, TreeController.update)
+  .delete(verifyJwt, TreeValidator.destroy, TreeController.delete);
 
 treeRoutes.route("/search-by-date").get(TreeController.filterCategories);
 

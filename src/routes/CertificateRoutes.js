@@ -1,15 +1,22 @@
-// import { Router } from "express";
-// import CertificateValidator from "Validators/CertificateValidator.js";
-// import CertificateController from "Controllers/CertificateController.js";
+import { Router } from "express";
 
-// const certificateRoutes = Router();
+import CertificateValidator from "../Validators/CertificateValidator.js";
+import CertificateController from "../Controllers/CertificateController.js";
+import verifyJwt from "../Middlewares/VerifyJwt.js";
+import verifyIsAdm from "../Middlewares/VerifyisAdm.js";
+import verifyUser from "../Middlewares/VerifyUser.js";
 
-// certificateRoutes
-//     .route("/certificate")
-//     .post(CertificateValidator.create, CertificateController.create)
-//     .get(CertificateController.read);
+const certificateRoutes = Router();
 
-// certificateRoutes
-//     .route("/:id")
-//     .delete(CertificateValidator.destroy, CertificateController.destroy)
-//     .put(CertificateValidator.update, CertificateController.update);
+certificateRoutes
+  .route("/")
+  .post(verifyJwt, CertificateValidator.create, CertificateController.create)
+  .get(verifyJwt, verifyIsAdm, CertificateController.readAll);
+
+certificateRoutes
+  .route("/:id")
+  .get(verifyJwt, verifyUser, CertificateController.readByUser)
+  .delete(verifyJwt, CertificateValidator.destroy, CertificateController.destroy)
+  .put(verifyJwt, CertificateValidator.update, CertificateController.update);
+
+export default certificateRoutes;

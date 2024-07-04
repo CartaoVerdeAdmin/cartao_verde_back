@@ -6,7 +6,10 @@ import verifyIsAdm from "../Middlewares/VerifyisAdm.js";
 
 const userRoutes = Router();
 
-userRoutes.route("/").post(UserValidator.create, UserController.login).get(UserController.readAll);
+userRoutes
+  .route("/")
+  .post(UserValidator.create, UserController.login)
+  .get(verifyJwt, verifyIsAdm, UserController.readAll);
 
 userRoutes
   .route("/:id")
@@ -17,10 +20,8 @@ userRoutes
 userRoutes
   .route("/favoritesTrees/:userId")
   .put(verifyJwt, UserController.updateFavoritesTrees)
-  .get(UserController.readFavoritesTrees)
+  .get(UserController.readFavoritesTrees);
 
-userRoutes
-  .route("/purchasedTrees/:userId")
-  .get(UserController.ReadPurchasedTrees);
+userRoutes.route("/purchasedTrees/:userId").get(UserController.ReadPurchasedTrees);
 
 export default userRoutes;
