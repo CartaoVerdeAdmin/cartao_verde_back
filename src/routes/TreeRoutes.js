@@ -6,7 +6,7 @@ import verifyIsAdm from "../Middlewares/VerifyisAdm.js";
 
 const treeRoutes = Router();
 
-treeRoutes.route("/treeCards").post(TreeValidator.read, TreeController.read);
+treeRoutes.route("/treeCards").get(TreeValidator.read, TreeController.read);
 
 treeRoutes
   .route("/")
@@ -18,7 +18,6 @@ treeRoutes
   .put(TreeValidator.update, TreeController.update)
   .delete(TreeValidator.destroy, TreeController.delete);
 
-treeRoutes.route("/favorite").get(TreeController.checkFavorited);
 treeRoutes.route("/search-by-date").get(TreeController.filterCategories);
 
 export default treeRoutes;

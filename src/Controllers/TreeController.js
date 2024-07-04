@@ -23,7 +23,7 @@ class TreeController {
         description,
         price,
         especire,
-        id_category:categoryTypeIds,
+        id_category: categoryTypeIds,
         archive: archiveID,
       });
       return res.status(200).json(myTree);
@@ -42,27 +42,11 @@ class TreeController {
     }
   }
 
-  async checkFavorited(req, res) {
-    try {
-      const { userId, myTreeId, enabled } = req.query;
-      let isFavorited = false;
-      if (enabled && enabled.toLowerCase() === "false") {
-        return res.status(200).json(isFavorited);
-      }
-      const user = await UserModel.findById(userId).select("favoritesmyTrees");
-      if (!user) return res.status(404).json({ message: "User not found" });
-
-      isFavorited = user.favoritesmyTrees.includes(myTreeId);
-      res.status(200).json(isFavorited);
-    } catch (error) {
-      res.status(500).json({ message: "Error while fetching User", error: error.message });
-    }
-  }
-
   async update(req, res) {
     try {
       const { id } = req.params;
-      const { name, location, description, especire, id_category, price, ...archivesObject } = req.body;
+      const { name, location, description, especire, id_category, price, ...archivesObject } =
+        req.body;
 
       const oldArchives = await TreeModel.findById(id).populate("archive");
       const archiveID = await ArchiveController.update({
@@ -70,7 +54,7 @@ class TreeController {
         name: name,
         oldArchives: oldArchives.archive,
       });
-      
+
       const myTree = await TreeModel.findByIdAndUpdate(id, {
         name,
         location,
