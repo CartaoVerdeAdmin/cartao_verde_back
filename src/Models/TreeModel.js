@@ -27,7 +27,7 @@ const TreeSchema = new Schema({
     type: Number,
     required: true,
   },
-  species: {
+  specie: {
     type: String,
     required: true,
     trim: true,

@@ -6,7 +6,7 @@ import CategoryTreeModel from "../Models/CategoryTreeModel.js";
 class TreeController {
   async create(req, res) {
     try {
-      const { name, location, description, especire, id_category, price, ...archive } = req.body;
+      const { name, location, description, specie, id_category, price, ...archive } = req.body;
 
       const categoryTypeIds = await Promise.all(
         id_category.map(async (categoryName) => {
@@ -22,7 +22,7 @@ class TreeController {
         location,
         description,
         price,
-        especire,
+        specie,
         id_category: categoryTypeIds,
         archive: archiveID,
       });
@@ -45,7 +45,7 @@ class TreeController {
   async update(req, res) {
     try {
       const { id } = req.params;
-      const { name, location, description, especire, id_category, price, ...archivesObject } =
+      const { name, location, description, specie, id_category, price, ...archivesObject } =
         req.body;
 
       const oldArchives = await TreeModel.findById(id).populate("archive");
@@ -61,7 +61,7 @@ class TreeController {
         description,
         archive: archiveID,
         price,
-        especire,
+        specie,
         id_category,
       });
       return res.status(200).json({});
@@ -74,6 +74,9 @@ class TreeController {
     try {
       const { id } = req.params;
       const myTree = await TreeModel.findById(id);
+      if (!myTree) {
+        return res.status(404).json({ message: "Tree not found" });
+      }
       await TreeModel.findByIdAndDelete(id);
       return res.status(200).json({ messsage: "Tree deleted successfully!" });
     } catch (error) {
