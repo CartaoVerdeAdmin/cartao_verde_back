@@ -48,7 +48,7 @@ const update = validateRequest({
     location: z.string().optional(),
     specie: z.string().optional(),
     price: z.number().optional(),
-    archive: z.array(z.any()),
+    archive: z.array(z.any()).optional(),
   }),
 });
 

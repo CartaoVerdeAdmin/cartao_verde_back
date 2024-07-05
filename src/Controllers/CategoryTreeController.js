@@ -21,7 +21,7 @@ class CategoryController {
 
   async readByName(req, res) {
     try {
-      const name = req?.query?.name;
+      const { name } = req?.query;
       const regexName = new RegExp(name, "i");
       const categoryPrice = await CategoryPriceModel.find({
         name: regexName,
