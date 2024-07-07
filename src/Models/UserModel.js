@@ -23,11 +23,6 @@ const UserSchema = new Schema({
     required: false,
     default: false,
   },
-  id_Trees: {
-    type: Schema.Types.ObjectId,
-    ref: "trees",
-    required: false,
-  },
   id_certificates: {
     type: Schema.Types.ObjectId,
     ref: "certificates",

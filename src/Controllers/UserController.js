@@ -1,4 +1,3 @@
-import TreeModel from "../Models/TreeModel.js";
 import UserModel from "../Models/UserModel.js";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
@@ -75,6 +74,7 @@ class UserController {
       res.status(500).json({ message: "ERRO", error: error.message });
     }
   }
+
 }
 
 export default new UserController();
