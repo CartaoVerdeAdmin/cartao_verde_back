@@ -5,6 +5,6 @@ import verifyIsAdm from "../Middlewares/VerifyisAdm.js";
 
 const archiveRoutes = Router();
 
-archiveRoutes.route("/archive").get(ArchiveController.getArchivesbyID);
+archiveRoutes.route("/").get(ArchiveController.getArchivesbyID);
 
 export default archiveRoutes;

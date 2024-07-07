@@ -4,32 +4,36 @@ import mongoose from "mongoose";
 
 const create = validateRequest({
   body: z.object({
-    title: z
-      .string({ required_error: "The title is required" })
+    name: z
+      .string({ required_error: "The name is required" })
       .min(2, { message: "Title must be at least 2 characters long" })
       .max(60, { message: "Title cannot exceed 60 characters" }),
-
-    shortDescription: z
-      .string({ required_error: "The short description is required" })
-      .min(2, {
-        message: "Short description must be at least 2 characters long",
-      })
-      .max(70, { message: "Short description cannot exceed 70 characters" }),
-
-    longDescription: z
+    description: z
       .string({ required_error: "The description is required" })
-      .min(20, {
-        message: "Large description must be at least 20 characters long",
+      .min(2, {
+        message: "Description must be at least 2 characters long",
       })
-      .max(750, { message: "Large description cannot exceed 750 characters" }),
-    archives: z.array(z.any()),
+      .max(750, { message: "Description cannot exceed 750 characters" }),
+    location: z
+      .string({ required_error: "The location is required" })
+      .min(2, {
+        message: "Location must be at least 2 characters long",
+      })
+      .max(750, { message: "Location cannot exceed 750 characters" }),
+    archive: z.array(z.any()),
+    specie: z
+      .string({ required_error: "The specie is required" })
+      .min(2, {
+        message: "Specie must be at least 2 characters long",
+      })
+      .max(70, { message: "Specie cannot exceed 70 characters" }),
+    price: z.number({ required_error: "The price is required" }),
   }),
-  link: z.string({ required_error: "The link is required" }),
 });
 
 const destroy = validateRequest({
   params: z.object({
-    id: z.custom(mongoose.isValidObjectId, "O ID não é válido"),
+    id: z.custom(mongoose.isValidObjectId, "Invalid ID"),
   }),
 });
 
@@ -39,11 +43,12 @@ const read = validateRequest({
 
 const update = validateRequest({
   body: z.object({
-    title: z.string().optional(),
-    shortDescription: z.string().optional(),
-    longDescription: z.string().optional(),
-    link: z.string().optional(),
-    archives: z.array(z.any()),
+    name: z.string().optional(),
+    description: z.string().optional(),
+    location: z.string().optional(),
+    specie: z.string().optional(),
+    price: z.number().optional(),
+    archive: z.array(z.any()).optional(),
   }),
 });
 
