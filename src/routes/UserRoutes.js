@@ -18,4 +18,5 @@ userRoutes
   .delete(verifyJwt, verifyIsAdm, UserValidator.destroy, UserController.destroy)
   .put(verifyJwt, verifyIsAdm, UserValidator.update, UserController.update);
 
+userRoutes.route("/refresh-token").get(verifyJwt, verifyUser, UserController.refreshToken);
 export default userRoutes;

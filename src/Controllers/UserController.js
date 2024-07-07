@@ -75,6 +75,38 @@ class UserController {
     }
   }
 
+  async refreshToken(req, res) {
+    const refreshToken = req.params.refreshToken;
+
+    if (!refreshToken) {
+      return res.status(401).json({ message: "Refresh token não fornecido" });
+    }
+
+    try {
+      const decoded = jwt.verify(refreshToken, process.env.JWT_SECRET);
+      console.log(decoded);
+      const user = await UserModel.findById(decoded.User._id);
+      if (!user) {
+        return res.status(404).json({ message: "Usuário não existe" });
+      }
+
+      const accessToken = jwt.sign(
+        {
+          User: {
+            _id: user._id,
+            email: user.email,
+          },
+        },
+        process.env.JWT_SECRET,
+        { expiresIn: process.env.JWT_EXPIRE_IN }
+      );
+
+      res.status(200).json({ accessToken });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Erro ao atualizar token", error: error.message });
+    }
+  }
 }
 
 export default new UserController();
