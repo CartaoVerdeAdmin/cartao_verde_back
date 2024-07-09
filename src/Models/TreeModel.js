@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 const Schema = mongoose.Schema;
 
@@ -13,23 +13,34 @@ const TreeSchema = new Schema({
     required: true,
     trim: false,
   },
-  imageURL: {
+  description: {
     type: String,
     required: true,
     trim: true,
   },
-  especire: {
+  archive: {
+    type: [Schema.Types.ObjectId],
+    ref: 'archive',
+    required: true,
+  },
+  price: {
+    type: Number,
+    required: true,
+  },
+  specie: {
     type: String,
     required: true,
     trim: true,
   },
-  id_category: {
-    type: Schema.Types.ObjectId,
-    ref: "category",
-    required: true,
-  },
+  id_category: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'categoryTree',
+      required: true,
+    },
+  ],
 });
 
-const TreeModel = mongoose.model("trees", TreeSchema);
+const TreeModel = mongoose.model('trees', TreeSchema);
 
 export default TreeModel;

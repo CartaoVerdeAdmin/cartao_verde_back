@@ -1,8 +1,9 @@
 function verifyUser(req, res, next) {
-  const id = req?.params?.id || req?.body?.id_user || req?.body?._id;
+  const id =
+    req?.params?.id || req?.body?.id_user || req?.body?._id || req?.params?._id;
 
   if (req.userId !== id) {
-    return res.status(401).json({ message: "Operação não autorizada." });
+    return res.status(401).json({ message: 'Operação não autorizada.' });
   }
 
   next();

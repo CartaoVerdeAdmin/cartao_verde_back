@@ -1,4 +1,4 @@
-import CategoryPriceModel from "../Models/CategoryTreeModel.js";
+import CategoryPriceModel from '../Models/CategoryTreeModel.js';
 
 class CategoryController {
   async create(req, res) {
@@ -6,7 +6,7 @@ class CategoryController {
       const category = await CategoryPriceModel.create(req.body);
       return res.status(200).json(category);
     } catch (error) {
-      res.status(500).json({ message: "ERROR", error: error.message });
+      res.status(500).json({ message: 'ERROR', error: error.message });
     }
   }
 
@@ -15,21 +15,21 @@ class CategoryController {
       const category = await CategoryPriceModel.find(req.body);
       return res.status(200).json(category);
     } catch (error) {
-      res.status(500).json({ message: "ERROR", error: error.message });
+      res.status(500).json({ message: 'ERROR', error: error.message });
     }
   }
 
   async readByName(req, res) {
     try {
-      const name = req?.query?.name;
-      const regexName = new RegExp(name, "i");
+      const { name } = req.query;
+      const regexName = new RegExp(name, 'i');
       const categoryPrice = await CategoryPriceModel.find({
         name: regexName,
-      }).sort("name");
+      }).sort('name');
       return res.status(200).json(categoryPrice);
     } catch (error) {
       return res.status(500).json({
-        message: "Erro while fetching CategoryPrice by name",
+        message: 'Erro while fetching CategoryPrice by name',
         error: error.message,
       });
     }
@@ -41,7 +41,7 @@ class CategoryController {
       return res.status(200).json(namesArray);
     } catch (error) {
       res.status(500).json({
-        message: "Error while fetching CategoryPrice names",
+        message: 'Error while fetching CategoryPrice names',
         error: error.message,
       });
     }
@@ -53,14 +53,14 @@ class CategoryController {
 
       const foundCategory = await CategoryPriceModel.findById(id);
       if (!foundCategory) {
-        return res.status(404).json({ message: "Category not found!" });
+        return res.status(404).json({ message: 'Category not found!' });
       }
       await foundCategory.deleteOne();
       res.status(200).json({
-        message: "Category successfully deleted!",
+        message: 'Category successfully deleted!',
       });
     } catch (error) {
-      res.status(500).json({ message: "ERROR", error: error.message });
+      res.status(500).json({ message: 'ERROR', error: error.message });
     }
   }
 
@@ -68,11 +68,12 @@ class CategoryController {
     try {
       const { id } = req.params;
       const foundCategory = await CategoryPriceModel.findById(id);
-      if (!foundCategory) return res.status(404).json({ message: "Category not found!" });
+      if (!foundCategory)
+        return res.status(404).json({ message: 'Category not found!' });
       const category = await foundCategory.set(req.body).save();
       res.status(200).json(category);
     } catch (error) {
-      res.status(500).json({ message: "ERROR", error: error.message });
+      res.status(500).json({ message: 'ERROR', error: error.message });
     }
   }
 }

@@ -1,24 +1,20 @@
-import { Router } from "express";
-import TreeController from "../Controllers/TreeController.js";
-import TreeValidator from "../Validators/TreeValidator.js";
-import verifyJwt from "../Middlewares/VerifyJwt.js";
-import verifyIsAdm from "../Middlewares/VerifyisAdm.js";
+import { Router } from 'express';
+import TreeController from '../Controllers/TreeController.js';
+import TreeValidator from '../Validators/TreeValidator.js';
+import verifyJwt from '../Middlewares/VerifyJwt.js';
+import verifyIsAdm from '../Middlewares/VerifyisAdm.js';
 
 const treeRoutes = Router();
 
-treeRoutes.route("/treeCards").post(TreeValidator.read, TreeController.read);
+treeRoutes
+  .route('/')
+  .post(verifyJwt, verifyIsAdm, TreeController.create)
+  .get(verifyJwt, TreeValidator.read, TreeController.read);
 
 treeRoutes
-  .route("/tree")
-  .post(TreeValidator.create, TreeController.create)
-  .get(TreeValidator.read, TreeController.read);
-
-treeRoutes
-  .route("/:id")
-  .put(TreeValidator.update, TreeController.update)
-  .delete(TreeValidator.destroy, TreeController.delete);
-
-treeRoutes.route("/favorite").get(TreeController.checkFavorited);
-treeRoutes.route("/search-by-date").get(TreeController.filterCategories);
+  .route('/:id')
+  .put(verifyJwt, verifyIsAdm, TreeValidator.update, TreeController.update)
+  .delete(verifyJwt, verifyIsAdm, TreeValidator.destroy, TreeController.delete);
+treeRoutes.route('/search-by-date').get(TreeController.filterCategories);
 
 export default treeRoutes;
