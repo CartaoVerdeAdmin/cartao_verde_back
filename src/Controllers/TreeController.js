@@ -38,9 +38,7 @@ class TreeController {
 
       return res.status(200).json(myTree);
     } catch (error) {
-      res
-        .status(500)
-        .json({ message: "Error while fetching myTree cards", error: error.message });
+      res.status(500).json({ message: "Error while fetching myTree cards", error: error.message });
     }
   }
 
@@ -88,7 +86,7 @@ class TreeController {
         archive: archiveID,
         id_categoryType: categoryTypeIds,
       });
-      return res.status(200).json({});
+      return res.status(200).json(myTree);
     } catch (error) {
       res.status(500).json({ message: "Error while updating archive", error: error.message });
     }

@@ -12,7 +12,7 @@ routes
   .use("/user", userRoutes)
   .use("/tree", treeRoutes)
   .use("/archive", archiveRoutes)
-  .use("/categoryTree", categoryTreeRoutes)
-  // .use("/certificateRoutes", certificateRoutes)
-  
+  .use("/categoryTree", categoryTreeRoutes);
+// .use("/certificateRoutes", certificateRoutes)
+
 export default routes;
