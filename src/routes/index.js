@@ -5,7 +5,7 @@ import categoryTreeRoutes from "./CategoryTreeRoutes.js";
 import treeRoutes from "./TreeRoutes.js";
 import archiveRoutes from "./ArchiveRoutes.js";
 import certificateRoutes from "./CertificateRoutes.js";
-
+import refreshRoutes from "./Refresh.js";
 const routes = Router();
 
 routes
@@ -13,6 +13,7 @@ routes
   .use("/tree", treeRoutes)
   .use("/archive", archiveRoutes)
   .use("/categoryTree", categoryTreeRoutes)
-  .use("/certificate", certificateRoutes);
+  .use("/certificate", certificateRoutes)
+  .use("/refresh",refreshRoutes);
 
 export default routes;

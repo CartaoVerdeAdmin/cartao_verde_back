@@ -76,8 +76,9 @@ class UserController {
   }
 
   async refreshToken(req, res) {
+    console.log("öi")
     const refreshToken = req.params.refreshToken;
-
+    console.log(req)
     if (!refreshToken) {
       return res.status(401).json({ message: "Refresh token não fornecido" });
     }
