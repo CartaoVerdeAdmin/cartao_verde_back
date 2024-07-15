@@ -1,6 +1,11 @@
 import UserModel from "../Models/UserModel.js";
+
 import jwt from "jsonwebtoken";
-import mongoose from "mongoose";
+import {
+  cookieAuthName,
+  createCookieOptions,
+  deleteCookieOptions,
+} from "../Utils/general/CookieAuth.js";
 
 class UserController {
   async login(req, res) {
@@ -20,7 +25,10 @@ class UserController {
         { expiresIn: process.env.JWT_EXPIRE_IN }
       );
 
-      return res.status(200).json({ token, user: userFound });
+      return res
+        .cookie(cookieAuthName, token, createCookieOptions)
+        .status(200)
+        .json({ token, user: userFound });
     } catch (error) {
       res.status(500).json({ message: "Error at login", error: error.message });
     }
@@ -76,21 +84,23 @@ class UserController {
   }
 
   async refreshToken(req, res) {
-    console.log("öi")
-    const refreshToken = req.params.refreshToken;
-    console.log(req)
-    if (!refreshToken) {
-      return res.status(401).json({ message: "Refresh token não fornecido" });
-    }
-
     try {
-      const decoded = jwt.verify(refreshToken, process.env.JWT_SECRET);
-      console.log(decoded);
-      const user = await UserModel.findById(decoded.User._id);
+      const refreshToken = req.signedCookies[cookieAuthName];
+      if (!refreshToken) {
+        return res.status(401).json({ message: "Token de refresh não fornecido" });
+      }
+
+      let decoded;
+      try {
+        decoded = jwt.verify(refreshToken, process.env.JWT_SECRET);
+      } catch (error) {
+        return res.status(401).json({ message: "Token de refresh inválido ou expirado" });
+      }
+
+      const user = await UserModel.findById(decoded.userFound._id);
       if (!user) {
         return res.status(404).json({ message: "Usuário não existe" });
       }
-
       const accessToken = jwt.sign(
         {
           User: {
@@ -102,7 +112,21 @@ class UserController {
         { expiresIn: process.env.JWT_EXPIRE_IN }
       );
 
-      res.status(200).json({ accessToken });
+      const newRefreshToken = jwt.sign(
+        {
+          User: {
+            _id: user._id,
+            email: user.email,
+          },
+        },
+        process.env.JWT_SECRET,
+        { expiresIn: process.env.REFRESH_TOKEN_EXPIRE }
+      );
+
+      res
+        .cookie(cookieAuthName, newRefreshToken, createCookieOptions)
+        .status(200)
+        .json({ accessToken });
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: "Erro ao atualizar token", error: error.message });

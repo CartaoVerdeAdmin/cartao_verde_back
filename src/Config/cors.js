@@ -11,6 +11,7 @@ const corsOptions = {
   },
   credentials: true,
   optionsSuccessStatus: 200,
+  allowedHeaders: ["Authorization", "Content-Type"],
 };
 
 export default corsOptions;

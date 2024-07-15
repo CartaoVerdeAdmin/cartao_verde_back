@@ -7,18 +7,12 @@ import verifyUser from "../Middlewares/VerifyUser.js";
 
 const userRoutes = Router();
 
-userRoutes
-  .route("/")
-  .post(UserValidator.create, UserController.login)
-  .get(verifyJwt, verifyIsAdm, UserController.readAll);
+userRoutes.route("/").post(UserValidator.create, UserController.login).get(UserController.readAll);
 
 userRoutes
   .route("/:id")
   .get(verifyJwt, verifyUser, UserValidator.get, UserController.read)
   .delete(verifyJwt, verifyIsAdm, UserValidator.destroy, UserController.destroy)
   .put(verifyJwt, verifyIsAdm, UserValidator.update, UserController.update);
-
-
-
 
 export default userRoutes;

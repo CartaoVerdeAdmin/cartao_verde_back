@@ -9,7 +9,7 @@ const treeRoutes = Router();
 treeRoutes
   .route("/")
   .post(verifyJwt, TreeController.create)
-  .get(verifyJwt, TreeValidator.read, TreeController.read);
+  .get(TreeValidator.read, TreeController.read);
 
 treeRoutes
   .route("/:id")
