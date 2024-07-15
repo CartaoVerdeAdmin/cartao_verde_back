@@ -10,16 +10,16 @@ import {
 class UserController {
   async login(req, res) {
     try {
-      let userFound = await UserModel.findOne({ email: req.body.email });
+      let user = await UserModel.findOne({ email: req.body.email });
 
-      if (!userFound) {
-        userFound = await UserModel.create(req.body);
+      if (!user) {
+        user = await UserModel.create(req.body);
 
-        await userFound.save();
+        await user.save();
       }
       const token = jwt.sign(
         {
-          userFound,
+          user,
         },
         process.env.JWT_SECRET,
         { expiresIn: process.env.JWT_EXPIRE_IN }
@@ -28,7 +28,7 @@ class UserController {
       return res
         .cookie(cookieAuthName, token, createCookieOptions)
         .status(200)
-        .json({ token, user: userFound });
+        .json({ token, user: user });
     } catch (error) {
       res.status(500).json({ message: "Error at login", error: error.message });
     }
@@ -86,6 +86,7 @@ class UserController {
   async refreshToken(req, res) {
     try {
       const refreshToken = req.signedCookies[cookieAuthName];
+      console.log(refreshToken);
       if (!refreshToken) {
         return res.status(401).json({ message: "Token de refresh não fornecido" });
       }
@@ -94,19 +95,17 @@ class UserController {
       try {
         decoded = jwt.verify(refreshToken, process.env.JWT_SECRET);
       } catch (error) {
+        console.log(error);
         return res.status(401).json({ message: "Token de refresh inválido ou expirado" });
       }
 
-      const user = await UserModel.findById(decoded.userFound._id);
+      const user = await UserModel.findById(decoded.user._id);
       if (!user) {
         return res.status(404).json({ message: "Usuário não existe" });
       }
       const accessToken = jwt.sign(
         {
-          User: {
-            _id: user._id,
-            email: user.email,
-          },
+          user,
         },
         process.env.JWT_SECRET,
         { expiresIn: process.env.JWT_EXPIRE_IN }
@@ -114,7 +113,7 @@ class UserController {
 
       const newRefreshToken = jwt.sign(
         {
-          User: {
+          user: {
             _id: user._id,
             email: user.email,
           },
