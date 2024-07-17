@@ -2,6 +2,7 @@ import CertificateModel from "../Models/CertificateModel.js";
 import UserModel from "../Models/UserModel.js";
 import TreeModel from "../Models/TreeModel.js";
 import moment from "moment";
+import transporter from "../Services/smtp.js";
 
 class CertificateController {
   async create(req, res) {
@@ -23,7 +24,25 @@ class CertificateController {
         id_user: id_user,
         ...rest,
       });
-      return res.status(200).json(certificate);
+
+      const mailOptions = {
+        from: process.env.EMAIL_USER,
+        to: `${user.email}`,
+        subject: `Compra de Certificado da Árvore ${tree.name}"`,
+        text: `Olá, ${user.name}
+        \nVocê realizou a compra do certificado da árvore ${tree.name} na plataforma Cartão Verde.
+        \nSegue em anexo seu certificado.
+        \nAgradecemos sua compra!
+        \n\nAtenciosamente, Equipe Cartão Verde`,
+      };
+
+      try {
+        transporter.sendMail(mailOptions);
+
+        return res.status(200).json({ certificate, message: "Email successfully sent" });
+      } catch (error) {
+        return res.status(500).json({ message: "Error sending email", error: error.message });
+      }
     } catch (error) {
       res.status(500).json({ message: "Error while creating Certificate", error: error.message });
     }
