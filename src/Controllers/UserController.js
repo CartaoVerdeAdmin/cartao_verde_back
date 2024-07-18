@@ -20,8 +20,6 @@ class UserController {
         { expiresIn: process.env.JWT_EXPIRE_IN }
       );
 
-      console.log(token);
-
       return res.status(200).json({ token, user: userFound });
     } catch (error) {
       res.status(500).json({ message: "Error at login", error: error.message });
