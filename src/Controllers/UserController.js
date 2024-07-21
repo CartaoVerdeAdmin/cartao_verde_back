@@ -74,7 +74,6 @@ class UserController {
       res.status(500).json({ message: "ERRO", error: error.message });
     }
   }
-
 }
 
 export default new UserController();
