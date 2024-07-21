@@ -8,13 +8,13 @@ const treeRoutes = Router();
 
 treeRoutes
   .route("/")
-  .post(verifyJwt, TreeController.create)
-  .get(verifyJwt, TreeValidator.read, TreeController.read);
+  .post(verifyJwt, verifyIsAdm, TreeController.create)
+  .get(TreeValidator.read, TreeController.read);
 
 treeRoutes
   .route("/:id")
-  .put(verifyJwt, TreeValidator.update, TreeController.update)
-  .delete(verifyJwt, TreeValidator.destroy, TreeController.delete);
+  .put(verifyJwt, verifyIsAdm, TreeValidator.update, TreeController.update)
+  .delete(verifyJwt, verifyIsAdm, TreeValidator.destroy, TreeController.delete);
 
 treeRoutes.route("/search-by-date").get(TreeController.filterCategories);
 
