@@ -7,7 +7,6 @@ import {
   createCookieOptions,
   deleteCookieOptions,
 } from "../Utils/general/CookieAuth.js";
-import { token } from "morgan";
 
 class UserController {
   async login(req, res) {
@@ -33,6 +32,7 @@ class UserController {
         .status(200)
         .json({ accessToken });
     } catch (error) {
+      console.log(error)
       res.status(500).json({ message: "Error at login", error: error.message });
     }
   }
@@ -94,7 +94,7 @@ class UserController {
       if (!oldRefreshToken) {
         return res.status(401).json({ message: "Token de refresh não fornecido" });
       }
-
+      
       const decoded = await decodeRefreshToken(oldRefreshToken);
       const foundToken = await RefreshTokenModel.findOne({ token: oldRefreshToken }).exec();
 
@@ -102,13 +102,13 @@ class UserController {
         const hackedUser = await UserModel.findOne({
           _id: decoded.userId,
         }).exec();
-
+ 
         await RefreshTokenModel.deleteMany({ user: hackedUser._id }).exec();
-        throw new ForbiddenError("Token reuse");
-      }
+        return res.status(404).json({ message: "token reuse"});
+      } 
       const userId = foundToken.user._id.toString();
-      if (userId !== decoded.userId) throw new ForbiddenError("Tampered token");
-
+      if (userId != decoded.userId) return res.status(404).json({ message: "tampered token"});
+      
       await foundToken.deleteOne();
       const {
         createdAt,
