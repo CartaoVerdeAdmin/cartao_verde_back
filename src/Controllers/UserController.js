@@ -1,11 +1,13 @@
 import UserModel from "../Models/UserModel.js";
-
-import jwt from "jsonwebtoken";
+import RefreshTokenModel from "../Models/RefreshTokenModel.js";
+import formatExpiresAt from "../Utils/general/formatExpiresAt.js";
+import { signSessionJwts, decodeRefreshToken } from "../Utils/general/jwt.js";
 import {
   cookieAuthName,
   createCookieOptions,
   deleteCookieOptions,
 } from "../Utils/general/CookieAuth.js";
+import { token } from "morgan";
 
 class UserController {
   async login(req, res) {
@@ -14,21 +16,22 @@ class UserController {
 
       if (!user) {
         user = await UserModel.create(req.body);
-
         await user.save();
       }
-      const token = jwt.sign(
-        {
-          user,
-        },
-        process.env.JWT_SECRET,
-        { expiresIn: process.env.JWT_EXPIRE_IN }
-      );
 
-      return res
-        .cookie(cookieAuthName, token, createCookieOptions)
+      const { createdAt, updatedAt, password: pass, ...tokenUserData } = user;
+      const { accessToken, refreshToken } = signSessionJwts(tokenUserData._doc);
+      const expiresAt = formatExpiresAt(process.env.REFRESH_TOKEN_EXPIRE);
+
+      await RefreshTokenModel.create({
+        user: user._id,
+        token: refreshToken,
+        expiresAt,
+      });
+      res
+        .cookie(cookieAuthName, refreshToken, createCookieOptions)
         .status(200)
-        .json({ token, user: user });
+        .json({ accessToken });
     } catch (error) {
       res.status(500).json({ message: "Error at login", error: error.message });
     }
@@ -85,45 +88,46 @@ class UserController {
 
   async refreshToken(req, res) {
     try {
-      const refreshToken = req.signedCookies[cookieAuthName];
-      console.log(refreshToken);
-      if (!refreshToken) {
+      const oldRefreshToken = req.signedCookies[cookieAuthName];
+      res.clearCookie(cookieAuthName, deleteCookieOptions);
+
+      if (!oldRefreshToken) {
         return res.status(401).json({ message: "Token de refresh não fornecido" });
       }
 
-      let decoded;
-      try {
-        decoded = jwt.verify(refreshToken, process.env.JWT_SECRET);
-      } catch (error) {
-        console.log(error);
-        return res.status(401).json({ message: "Token de refresh inválido ou expirado" });
-      }
+      const decoded = await decodeRefreshToken(oldRefreshToken);
+      const foundToken = await RefreshTokenModel.findOne({ token: oldRefreshToken }).exec();
 
-      const user = await UserModel.findById(decoded.user._id);
-      if (!user) {
-        return res.status(404).json({ message: "Usuário não existe" });
-      }
-      const accessToken = jwt.sign(
-        {
-          user,
-        },
-        process.env.JWT_SECRET,
-        { expiresIn: process.env.JWT_EXPIRE_IN }
-      );
+      if (!foundToken) {
+        const hackedUser = await UserModel.findOne({
+          _id: decoded.userId,
+        }).exec();
 
-      const newRefreshToken = jwt.sign(
-        {
-          user: {
-            _id: user._id,
-            email: user.email,
-          },
-        },
-        process.env.JWT_SECRET,
-        { expiresIn: process.env.REFRESH_TOKEN_EXPIRE }
-      );
+        await RefreshTokenModel.deleteMany({ user: hackedUser._id }).exec();
+        throw new ForbiddenError("Token reuse");
+      }
+      const userId = foundToken.user._id.toString();
+      if (userId !== decoded.userId) throw new ForbiddenError("Tampered token");
+
+      await foundToken.deleteOne();
+      const {
+        createdAt,
+        updatedAt,
+        password: pass,
+        ...tokenUserData
+      } = foundToken.user.toObject({ virtuals: true });
+
+      const { accessToken, refreshToken } = signSessionJwts(tokenUserData);
+
+      const expiresAt = formatExpiresAt(process.env.REFRESH_TOKEN_EXPIRE);
+      await RefreshTokenModel.create({
+        user: userId,
+        token: refreshToken,
+        expiresAt,
+      });
 
       res
-        .cookie(cookieAuthName, newRefreshToken, createCookieOptions)
+        .cookie(cookieAuthName, refreshToken, createCookieOptions)
         .status(200)
         .json({ accessToken });
     } catch (error) {
