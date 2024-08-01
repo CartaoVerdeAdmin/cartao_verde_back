@@ -17,11 +17,9 @@ const CertificateSchema = new Schema(
     },
     description: {
       type: String,
-      required: true,
     },
     expirateDate: {
       type: Date,
-      required: true,
     },
   },
   {

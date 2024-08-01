@@ -10,7 +10,7 @@ const certificateRoutes = Router();
 
 certificateRoutes
   .route("/")
-  .post(verifyJwt, CertificateValidator.create, CertificateController.create)
+  .post(CertificateController.create)
   .get(verifyJwt, verifyIsAdm, CertificateController.readAll);
 
 certificateRoutes

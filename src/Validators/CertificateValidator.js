@@ -10,10 +10,6 @@ const create = validateRequest({
     id_user: z
       .string({ required_error: "The user ID is required" })
       .refine(mongoose.isValidObjectId, { message: "The ID is not valid" }),
-    description: z
-      .string({ required_error: "The description is required" })
-      .min(10, { message: "Description must be at least 10 characters long" })
-      .max(100, { message: "Description cannot exceed 100 characters" }),
   }),
 });
 const destroy = validateRequest({

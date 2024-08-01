@@ -7,23 +7,17 @@ import transporter from "../Services/smtp.js";
 class CertificateController {
   async create(req, res) {
     try {
-      const { id_tree, id_user, ...rest } = req.body;
-
+      const { tree, id_user } = req.body;
       const user = await UserModel.findById(id_user);
       if (!user) {
         return res.status(400).json({ message: "User ID do not exist" });
       }
-
-      const tree = await TreeModel.findById(id_tree);
-      if (!tree) {
-        return res.status(400).json({ message: "Tree ID do not exist" });
+      for (const id of tree) {
+        await CertificateModel.create({
+          id_tree: id._id,
+          id_user: id_user,
+        });
       }
-
-      const certificate = await CertificateModel.create({
-        id_tree: id_tree,
-        id_user: id_user,
-        ...rest,
-      });
 
       const mailOptions = {
         from: process.env.EMAIL_USER,
