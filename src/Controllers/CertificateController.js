@@ -18,13 +18,14 @@ class CertificateController {
           id_user: id_user,
         });
       }
-
+      const treeNames = tree.map((tree) => tree.name).join(", ");
+      console.log(treeNames);
       const mailOptions = {
         from: process.env.EMAIL_USER,
         to: `${user.email}`,
-        subject: `Compra de Certificado da Árvore ${tree.name}"`,
+        subject: `Compra de Certificado da Árvore ${treeNames}"`,
         text: `Olá, ${user.name}
-        \nVocê realizou a compra do certificado da árvore ${tree.name} na plataforma Cartão Verde.
+        \nVocê realizou a compra do certificado da árvore ${treeNames} na plataforma Cartão Verde.
         \nSegue em anexo seu certificado.
         \nAgradecemos sua compra!
         \n\nAtenciosamente, Equipe Cartão Verde`,
@@ -32,8 +33,7 @@ class CertificateController {
 
       try {
         transporter.sendMail(mailOptions);
-
-        return res.status(200).json({ certificate, message: "Email successfully sent" });
+        return res.status(200).json({ message: "Email successfully sent" });
       } catch (error) {
         return res.status(500).json({ message: "Error sending email", error: error.message });
       }
