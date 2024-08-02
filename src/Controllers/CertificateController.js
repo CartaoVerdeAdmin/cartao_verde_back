@@ -23,7 +23,7 @@ class CertificateController {
       const mailOptions = {
         from: process.env.EMAIL_USER,
         to: `${user.email}`,
-        subject: `Compra de Certificado da Árvore ${treeNames}"`,
+        subject: `Compra de Certificado da Árvore ${treeNames}`,
         text: `Olá, ${user.name}
         \nVocê realizou a compra do certificado da árvore ${treeNames} na plataforma Cartão Verde.
         \nSegue em anexo seu certificado.
