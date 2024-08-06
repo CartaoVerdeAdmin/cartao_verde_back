@@ -14,7 +14,7 @@ routes
   .use("/tree", treeRoutes)
   .use("/archive", archiveRoutes)
   .use("/categoryTree", categoryTreeRoutes)
-  .use("/certificate", certificateRoutes);
+  .use("/certificate", certificateRoutes)
   .use("/pixpayment", pixpaymentRoutes);
 
 export default routes;

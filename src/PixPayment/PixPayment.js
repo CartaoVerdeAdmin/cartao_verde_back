@@ -1,21 +1,26 @@
-const { MercadoPagoConfig, Payment } = require("mercadopago");
+import { MercadoPagoConfig, Payment } from "mercadopago";
 
 class PixPayment {
   async create(req, res) {
-    const client = new MercadoPago({ accessToken: "<ACCESS_TOKEN>", options: { timeout: 5000 } });
+    const client = new MercadoPagoConfig({
+      accessToken: process.env.ACESSTOKEN,
+      options: { timeout: 5000 },
+    });
     const payment = new Payment(client);
 
-    payment
+    const data = req.body;
+
+    const teste = payment
       .create({
         body: {
-          transaction_amount: req.transaction_amount,
-          description: req.description,
-          payment_method_id: "PIX",
+          transaction_amount: data.transaction_amount,
+          description: data.description,
+          payment_method_id: "pix",
           payer: {
-            email: req.email,
+            email: data.email,
             identification: {
               type: "CPF",
-              number: req.number,
+              number: data.number,
             },
           },
         },
@@ -23,7 +28,8 @@ class PixPayment {
       })
       .then((result) => console.log(result))
       .catch((error) => console.log(error));
+    return res.status(200).json("link gerado com sucesso");
   }
 }
 
-export default PixPayment;
+export default new PixPayment();
