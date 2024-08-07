@@ -2,12 +2,12 @@ import UserModel from "../Models/UserModel.js";
 import TreeModel from "../Models/TreeModel.js";
 import ArchiveController from "./ArchiveController.js";
 import CategoryTreeModel from "../Models/CategoryTreeModel.js";
+import CertificateModel from "../Models/CertificateModel.js";
 
 class TreeController {
   async create(req, res) {
     try {
       const { name, location, description, specie, id_category, price, ...archive } = req.body;
-
       const categoryTypeIds = await Promise.all(
         id_category.map(async (categoryName) => {
           const categoryType = await CategoryTreeModel.findOne({ name: categoryName });
@@ -34,7 +34,12 @@ class TreeController {
 
   async read(req, res) {
     try {
-      const myTree = await TreeModel.find().populate("archive").populate("id_category");
+      const ids = await CertificateModel.find().select("id_tree");
+      const ids_trees = ids.map((id) => id.id_tree);
+      
+      const myTree = await TreeModel.find({ _id: { $nin: ids_trees } })
+        .populate("archive")
+        .populate("id_category");
 
       return res.status(200).json(myTree);
     } catch (error) {
