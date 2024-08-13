@@ -24,7 +24,7 @@ class PixPayment {
       },
     };
 
-    const requestOptions = { idempotencyKey: uuidv4() };
+    const requestOptions = { idempotencyKey: data.payment_key };
 
     try {
       const result = await payment.create({ body, requestOptions });
