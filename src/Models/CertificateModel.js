@@ -20,6 +20,8 @@ const CertificateSchema = new Schema(
     },
     expirateDate: {
       type: Date,
+      expires: 3600 * 24 * 365, //1 ano
+      default: Date.now,
     },
   },
   {
