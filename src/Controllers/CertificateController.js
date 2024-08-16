@@ -7,7 +7,7 @@ import transporter from "../Services/smtp.js";
 class CertificateController {
   async create(req, res) {
     try {
-      const { tree, id_user } = req.body;
+      const { tree, id_user, description} = req.body;
       const user = await UserModel.findById(id_user);
       if (!user) {
         return res.status(400).json({ message: "User ID do not exist" });
@@ -16,10 +16,10 @@ class CertificateController {
         await CertificateModel.create({
           id_tree: id._id,
           id_user: id_user,
+          description: description || "Default description"
         });
       }
       const treeNames = tree.map((tree) => tree.name).join(", ");
-      console.log(treeNames);
       const mailOptions = {
         from: process.env.EMAIL_USER,
         to: `${user.email}`,
@@ -46,7 +46,6 @@ class CertificateController {
     try {
       const certificate = await CertificateModel.find(req.body)
         .populate("id_tree")
-        // More Details https://stackoverflow.com/questions/26691543/return-certain-fields-with-populate-from-mongoose
         .populate({ path: "id_user", select: "name" });
 
       return res.status(200).json(certificate);
