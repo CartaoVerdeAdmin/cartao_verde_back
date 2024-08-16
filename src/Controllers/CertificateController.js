@@ -17,6 +17,7 @@ class CertificateController {
           id_tree: id._id,
           id_user: id_user,
 	        description:  "Default Description",
+          expiresAt: new Date(Date.now() + (3600 * 24 * 365 * 1000)),
         });
       }
       const treeNames = tree.map((tree) => tree.name).join(", ");
