@@ -1,10 +1,10 @@
 import { MercadoPagoConfig, Payment } from "mercadopago";
-import { v4 as uuidv4 } from "uuid";
+import { v4 as uuidv4, v4 } from "uuid";
 
 class PixPayment {
   async create(req, res) {
     const client = new MercadoPagoConfig({
-      accessToken: "TEST-3618565473876869-080617-de83334492688097bbaeb92c9dcb79cf-494462802",
+      accessToken: process.env.ACESSTOKEN,
       options: { timeout: 5000, idempotencyKey: "abc" },
     });
     const payment = new Payment(client);
@@ -24,12 +24,16 @@ class PixPayment {
       },
     };
 
-    const requestOptions = { idempotencyKey: data.payment_key };
+    const requestOptions = { idempotencyKey: uuidv4() };
 
     try {
       const result = await payment.create({ body, requestOptions });
-      res.status(200).json(result.point_of_interaction.transaction_data.ticket_url);
-      return result.point_of_interaction.transaction_data.ticket_url;
+      return res
+        .status(200)
+        .json({
+          link: result.point_of_interaction.transaction_data.ticket_url,
+          status: result.status,
+        });
     } catch (error) {
       console.error(error);
       return res.status(400).json(error);
