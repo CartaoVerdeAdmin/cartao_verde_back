@@ -2,25 +2,37 @@ import { z } from "zod";
 import { validateRequest } from "zod-express-middleware";
 import mongoose from "mongoose";
 
+const treeSchema = z.object({
+  _id: z.string().refine((value) => mongoose.isValidObjectId(value), { message: "Invalid ID" }),
+  archive: z.array(z.any()).optional(), 
+  description: z.string().optional(),
+  id_category: z.array(z.any()).optional(), 
+  location: z.string().optional(),
+  name: z.string().optional(),
+  price: z.number().optional(),
+  specie: z.string().optional(),
+  __v: z.number().optional(),
+});
+
 const create = validateRequest({
   body: z.object({
-    id_tree: z
-      .string({ required_error: "The tree ID is required" })
-      .refine(mongoose.isValidObjectId, { message: "The ID is not valid" }),
+    tree: z
+      .array(treeSchema) 
+      .nonempty({ message: "The tree array must not be empty" }),
     id_user: z
       .string({ required_error: "The user ID is required" })
       .refine(mongoose.isValidObjectId, { message: "The ID is not valid" }),
-    description: z
-      .string({ required_error: "The description is required" })
-      .min(10, { message: "Description must be at least 10 characters long" })
-      .max(100, { message: "Description cannot exceed 100 characters" }),
   }),
 });
+
+// Validação para deletar um recurso
 const destroy = validateRequest({
   params: z.object({
     id: z.string().refine(mongoose.isValidObjectId, { message: "The ID is not valid" }),
   }),
 });
+
+// Validação para atualizar um recurso
 const update = validateRequest({
   params: z.object({
     id: z.string().refine(mongoose.isValidObjectId, { message: "The ID is not valid" }),
@@ -38,6 +50,7 @@ const update = validateRequest({
   }),
 });
 
+// Validação para ler um recurso (sem corpo)
 const read = validateRequest({
   body: z.object({}),
 });

@@ -2,28 +2,41 @@ import CertificateModel from "../Models/CertificateModel.js";
 import UserModel from "../Models/UserModel.js";
 import TreeModel from "../Models/TreeModel.js";
 import moment from "moment";
+import transporter from "../Services/smtp.js";
 
 class CertificateController {
   async create(req, res) {
     try {
-      const { id_tree, id_user, ...rest } = req.body;
-
+      const { tree, id_user } = req.body;
       const user = await UserModel.findById(id_user);
       if (!user) {
         return res.status(400).json({ message: "User ID do not exist" });
       }
-
-      const tree = await TreeModel.findById(id_tree);
-      if (!tree) {
-        return res.status(400).json({ message: "Tree ID do not exist" });
+      for (const id of tree) {
+        await CertificateModel.create({
+          id_tree: id._id,
+          id_user: id_user,
+        });
       }
+      const treeNames = tree.map((tree) => tree.name).join(", ");
+      console.log(treeNames);
+      const mailOptions = {
+        from: process.env.EMAIL_USER,
+        to: `${user.email}`,
+        subject: `Compra de Certificado da Árvore ${treeNames}`,
+        text: `Olá, ${user.name}
+        \nVocê realizou a compra do certificado da árvore ${treeNames} na plataforma Cartão Verde.
+        \nSegue em anexo seu certificado.
+        \nAgradecemos sua compra!
+        \n\nAtenciosamente, Equipe Cartão Verde`,
+      };
 
-      const certificate = await CertificateModel.create({
-        id_tree: id_tree,
-        id_user: id_user,
-        ...rest,
-      });
-      return res.status(200).json(certificate);
+      try {
+        transporter.sendMail(mailOptions);
+        return res.status(200).json({ message: "Email successfully sent" });
+      } catch (error) {
+        return res.status(500).json({ message: "Error sending email", error: error.message });
+      }
     } catch (error) {
       res.status(500).json({ message: "Error while creating Certificate", error: error.message });
     }
