@@ -27,12 +27,12 @@ class UserController {
         token: refreshToken,
         expiresAt,
       });
+      console.log(accessToken);
       res
-        .cookie(cookieAuthName, refreshToken, createCookieOptions)
         .status(200)
+        .cookie(cookieAuthName, refreshToken, createCookieOptions)
         .json({ accessToken });
     } catch (error) {
-      console.log(error);
       res.status(500).json({ message: "Error at login", error: error.message });
     }
   }
@@ -132,6 +132,17 @@ class UserController {
         .json({ accessToken });
     } catch (error) {
       console.error(error);
+      res.status(500).json({ message: "Erro ao atualizar token", error: error.message });
+    }
+  }
+  async logout(req, res) {
+    try {
+      const token = req.signedCookies[cookieAuthName];
+
+      await RefreshTokenModel.findOneAndDelete({ token }).exec();
+
+      return res.clearCookie(cookieAuthName, deleteCookieOptions).sendStatus(204);
+    } catch (error) {
       res.status(500).json({ message: "Erro ao atualizar token", error: error.message });
     }
   }

@@ -19,7 +19,6 @@ class CertificateController {
         });
       }
       const treeNames = tree.map((tree) => tree.name).join(", ");
-      console.log(treeNames);
       const mailOptions = {
         from: process.env.EMAIL_USER,
         to: `${user.email}`,
