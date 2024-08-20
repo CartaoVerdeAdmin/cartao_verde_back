@@ -28,14 +28,12 @@ class PixPayment {
 
     try {
       const result = await payment.create({ body, requestOptions });
-      return res
-        .status(200)
-        .json({
-          link: result.point_of_interaction.transaction_data.ticket_url,
-          status: result.status,
-        });
+      return res.status(200).json({
+        link: result.point_of_interaction.transaction_data.ticket_url,
+        status: result.status,
+      });
     } catch (error) {
-      console.error(error);
+      console.log(error);
       return res.status(400).json(error);
     }
   }
