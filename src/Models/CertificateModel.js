@@ -18,8 +18,10 @@ const CertificateSchema = new Schema(
     description: {
       type: String,
     },
-    expirateDate: {
+    expiresAt: {
       type: Date,
+      required: true,
+      expires: 0 
     },
   },
   {
@@ -30,3 +32,4 @@ const CertificateSchema = new Schema(
 const CertificateModel = mongoose.model("certificates", CertificateSchema);
 
 export default CertificateModel;
+

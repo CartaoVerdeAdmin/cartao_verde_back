@@ -11,12 +11,12 @@ const certificateRoutes = Router();
 certificateRoutes
   .route("/")
   .post(CertificateValidator.create, CertificateController.create)
-  .get(verifyJwt, verifyIsAdm, CertificateController.readAll);
+  .get(CertificateController.readAll);
 
 certificateRoutes
   .route("/:id")
   .get(verifyJwt, verifyUser, CertificateController.readByUser)
-  .delete(verifyJwt, CertificateValidator.destroy, CertificateController.destroy)
+  .delete(CertificateValidator.destroy, CertificateController.destroy)
   .put(verifyJwt, CertificateValidator.update, CertificateController.update);
 
 export default certificateRoutes;
