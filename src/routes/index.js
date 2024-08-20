@@ -5,6 +5,7 @@ import categoryTreeRoutes from "./CategoryTreeRoutes.js";
 import treeRoutes from "./TreeRoutes.js";
 import archiveRoutes from "./ArchiveRoutes.js";
 import certificateRoutes from "./CertificateRoutes.js";
+import pixpaymentRoutes from "./PixPaymentRoutes.js";
 
 const routes = Router();
 
@@ -13,6 +14,7 @@ routes
   .use("/tree", treeRoutes)
   .use("/archive", archiveRoutes)
   .use("/categoryTree", categoryTreeRoutes)
-  .use("/certificate", certificateRoutes);
+  .use("/certificate", certificateRoutes)
+  .use("/pixpayment", pixpaymentRoutes);
 
 export default routes;
