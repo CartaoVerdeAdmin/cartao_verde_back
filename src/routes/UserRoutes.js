@@ -7,10 +7,7 @@ import verifyUser from "../Middlewares/VerifyUser.js";
 
 const userRoutes = Router();
 
-userRoutes
-  .route("/")
-  .post(UserValidator.create, UserController.login)
-  .get(verifyJwt, verifyIsAdm, UserController.readAll);
+userRoutes.route("/").post(UserValidator.create, UserController.login).get(UserController.readAll);
 
 userRoutes
   .route("/:id")

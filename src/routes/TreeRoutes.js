@@ -8,7 +8,7 @@ const treeRoutes = Router();
 
 treeRoutes
   .route("/")
-  .post(verifyJwt, verifyIsAdm, TreeController.create)
+  .post(verifyJwt, verifyIsAdm, TreeValidator.create, TreeController.create)
   .get(TreeValidator.read, TreeController.read);
 
 treeRoutes
