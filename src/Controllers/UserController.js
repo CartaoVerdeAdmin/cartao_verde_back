@@ -27,7 +27,6 @@ class UserController {
         token: refreshToken,
         expiresAt,
       });
-      console.log(accessToken);
       res
         .status(200)
         .cookie(cookieAuthName, refreshToken, createCookieOptions)
