@@ -16,6 +16,8 @@ class CertificateController {
         await CertificateModel.create({
           id_tree: id._id,
           id_user: id_user,
+	        description:  "Default Description",
+          expiresAt: new Date(Date.now() + (3600 * 24 * 365 * 1000)),
         });
       }
       const treeNames = tree.map((tree) => tree.name).join(", ");
@@ -45,7 +47,6 @@ class CertificateController {
     try {
       const certificate = await CertificateModel.find(req.body)
         .populate("id_tree")
-        // More Details https://stackoverflow.com/questions/26691543/return-certain-fields-with-populate-from-mongoose
         .populate({ path: "id_user", select: "name" });
 
       return res.status(200).json(certificate);
@@ -92,7 +93,6 @@ class CertificateController {
 
       const certificated = await CertificateModel.find({ id_user: id })
         .populate("id_tree")
-        // More Details https://stackoverflow.com/questions/26691543/return-certain-fields-with-populate-from-mongoose
         .populate({ path: "id_user", select: "name" });
       let filteredCertificates;
 
