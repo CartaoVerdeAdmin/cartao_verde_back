@@ -14,13 +14,13 @@ function verifyJwt(req, res, next) {
   if (!token) {
     return res.status(403).json({ message: "Jwt token não encontrado" });
   }
-
   jwt.verify(token, process.env.JWT_SECRET, (error, user) => {
     if (error) {
       return res.status(403).json({ message: "Jwt token é inválido" });
     }
-    req.userId = user.userFound._id;
-    req.userType = user.userFound.type;
+
+    req.userId = user.user._id;
+    req.userType = user.user.type;
 
     next();
   });

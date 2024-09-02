@@ -1,26 +1,36 @@
 import UserModel from "../Models/UserModel.js";
-import jwt from "jsonwebtoken";
-import mongoose from "mongoose";
+import RefreshTokenModel from "../Models/RefreshTokenModel.js";
+import formatExpiresAt from "../Utils/general/formatExpiresAt.js";
+import { signSessionJwts, decodeRefreshToken } from "../Utils/general/jwt.js";
+import {
+  cookieAuthName,
+  createCookieOptions,
+  deleteCookieOptions,
+} from "../Utils/general/CookieAuth.js";
 
 class UserController {
   async login(req, res) {
     try {
-      let userFound = await UserModel.findOne({ email: req.body.email });
+      let user = await UserModel.findOne({ email: req.body.email });
 
-      if (!userFound) {
-        userFound = await UserModel.create(req.body);
-
-        await userFound.save();
+      if (!user) {
+        user = await UserModel.create(req.body);
+        await user.save();
       }
-      const token = jwt.sign(
-        {
-          userFound,
-        },
-        process.env.JWT_SECRET,
-        { expiresIn: process.env.JWT_EXPIRE_IN }
-      );
 
-      return res.status(200).json({ token, user: userFound });
+      const { createdAt, updatedAt, password: pass, ...tokenUserData } = user;
+      const { accessToken, refreshToken } = signSessionJwts(tokenUserData._doc);
+      const expiresAt = formatExpiresAt(process.env.REFRESH_TOKEN_EXPIRE);
+
+      await RefreshTokenModel.create({
+        user: user._id,
+        token: refreshToken,
+        expiresAt,
+      });
+      res
+        .status(200)
+        .cookie(cookieAuthName, refreshToken, createCookieOptions)
+        .json({ accessToken });
     } catch (error) {
       res.status(500).json({ message: "Error at login", error: error.message });
     }
@@ -72,6 +82,67 @@ class UserController {
       });
     } catch (error) {
       res.status(500).json({ message: "ERRO", error: error.message });
+    }
+  }
+
+  async refreshToken(req, res) {
+    try {
+      const oldRefreshToken = req.signedCookies[cookieAuthName];
+      res.clearCookie(cookieAuthName, deleteCookieOptions);
+
+      if (!oldRefreshToken) {
+        return res.status(401).json({ message: "Token de refresh não fornecido" });
+      }
+
+      const decoded = await decodeRefreshToken(oldRefreshToken);
+      const foundToken = await RefreshTokenModel.findOne({ token: oldRefreshToken }).exec();
+
+      if (!foundToken) {
+        const hackedUser = await UserModel.findOne({
+          _id: decoded.userId,
+        }).exec();
+
+        await RefreshTokenModel.deleteMany({ user: hackedUser._id }).exec();
+        return res.status(404).json({ message: "token reuse" });
+      }
+      const userId = foundToken.user._id.toString();
+      if (userId != decoded.userId) return res.status(404).json({ message: "tampered token" });
+
+      await foundToken.deleteOne();
+      const {
+        createdAt,
+        updatedAt,
+        password: pass,
+        ...tokenUserData
+      } = foundToken.user.toObject({ virtuals: true });
+
+      const { accessToken, refreshToken } = signSessionJwts(tokenUserData);
+
+      const expiresAt = formatExpiresAt(process.env.REFRESH_TOKEN_EXPIRE);
+      await RefreshTokenModel.create({
+        user: userId,
+        token: refreshToken,
+        expiresAt,
+      });
+
+      res
+        .cookie(cookieAuthName, refreshToken, createCookieOptions)
+        .status(200)
+        .json({ accessToken });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Erro ao atualizar token", error: error.message });
+    }
+  }
+  async logout(req, res) {
+    try {
+      const token = req.signedCookies[cookieAuthName];
+
+      await RefreshTokenModel.findOneAndDelete({ token }).exec();
+
+      return res.clearCookie(cookieAuthName, deleteCookieOptions).sendStatus(204);
+    } catch (error) {
+      res.status(500).json({ message: "Erro ao atualizar token", error: error.message });
     }
   }
 }
