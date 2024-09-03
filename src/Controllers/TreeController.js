@@ -7,7 +7,9 @@ import CertificateModel from "../Models/CertificateModel.js";
 class TreeController {
   async create(req, res) {
     try {
-      const { name, location, description, specie, id_category, price, ...archive } = req.body;
+      console.log("error");
+      const { name, location, description, total_quantity, id_category, price, ...archive } =
+        req.body;
       const categoryTypeIds = await Promise.all(
         id_category.map(async (categoryName) => {
           const categoryType = await CategoryTreeModel.findOne({ name: categoryName });
@@ -22,12 +24,13 @@ class TreeController {
         location,
         description,
         price,
-        specie,
+        total_quantity,
         id_category: categoryTypeIds,
         archive: archiveID,
       });
       return res.status(200).json(myTree);
     } catch (error) {
+      console.log(error);
       res.status(500).json({ message: "Error while creating Tree", error: error.message });
     }
   }
@@ -36,7 +39,7 @@ class TreeController {
     try {
       const ids = await CertificateModel.find().select("id_tree");
       const ids_trees = ids.map((id) => id.id_tree);
-      
+
       const myTree = await TreeModel.find({ _id: { $nin: ids_trees } })
         .populate("archive")
         .populate("id_category");
@@ -78,6 +81,7 @@ class TreeController {
   async delete(req, res) {
     try {
       const { id } = req.params;
+
       const myTree = await TreeModel.findById(id);
       if (!myTree) {
         return res.status(404).json({ message: "Tree not found" });

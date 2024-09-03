@@ -24,11 +24,11 @@ const TreeSchema = new Schema({
     required: true,
   },
   price: {
-    type: Number,
+    type: [Number],
     required: true,
   },
-  specie: {
-    type: String,
+  total_quantity: {
+    type: Number,
     required: true,
     trim: true,
   },

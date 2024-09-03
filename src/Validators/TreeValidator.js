@@ -21,13 +21,9 @@ const create = validateRequest({
       })
       .max(750, { message: "Location cannot exceed 750 characters" }),
     archive: z.array(z.any()),
-    specie: z
-      .string({ required_error: "The specie is required" })
-      .min(2, {
-        message: "Specie must be at least 2 characters long",
-      })
-      .max(70, { message: "Specie cannot exceed 70 characters" }),
-    price: z.number({ required_error: "The price is required" }),
+    total_quantity: z.any({ required_error: "The quantity is required" }),
+
+    price: z.array(z.any()),
   }),
 });
 
