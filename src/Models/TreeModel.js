@@ -32,6 +32,11 @@ const TreeSchema = new Schema({
     required: true,
     trim: true,
   },
+  available_quantity: {
+    type: Number,
+    required: true,
+    trim: true,
+  },
   id_category: [
     {
       type: Schema.Types.ObjectId,

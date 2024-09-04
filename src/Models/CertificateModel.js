@@ -8,7 +8,6 @@ const CertificateSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "trees",
       required: true,
-      unique: true,
     },
     id_user: {
       type: Schema.Types.ObjectId,
@@ -18,10 +17,18 @@ const CertificateSchema = new Schema(
     description: {
       type: String,
     },
+    quantity: {
+      type: Number,
+      required: true,
+    },
     expiresAt: {
       type: Date,
       required: true,
-      expires: 0 
+      expires: 0,
+    },
+    years: {
+      type: Number,
+      required: true,
     },
   },
   {
@@ -32,4 +39,3 @@ const CertificateSchema = new Schema(
 const CertificateModel = mongoose.model("certificates", CertificateSchema);
 
 export default CertificateModel;
-

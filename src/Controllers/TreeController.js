@@ -1,13 +1,10 @@
-import UserModel from "../Models/UserModel.js";
 import TreeModel from "../Models/TreeModel.js";
 import ArchiveController from "./ArchiveController.js";
 import CategoryTreeModel from "../Models/CategoryTreeModel.js";
-import CertificateModel from "../Models/CertificateModel.js";
 
 class TreeController {
   async create(req, res) {
     try {
-      console.log("error");
       const { name, location, description, total_quantity, id_category, price, ...archive } =
         req.body;
       const categoryTypeIds = await Promise.all(
@@ -25,24 +22,19 @@ class TreeController {
         description,
         price,
         total_quantity,
+        available_quantity: total_quantity,
         id_category: categoryTypeIds,
         archive: archiveID,
       });
       return res.status(200).json(myTree);
     } catch (error) {
-      console.log(error);
       res.status(500).json({ message: "Error while creating Tree", error: error.message });
     }
   }
 
   async read(req, res) {
     try {
-      const ids = await CertificateModel.find().select("id_tree");
-      const ids_trees = ids.map((id) => id.id_tree);
-
-      const myTree = await TreeModel.find({ _id: { $nin: ids_trees } })
-        .populate("archive")
-        .populate("id_category");
+      const myTree = await TreeModel.find().populate("archive").populate("id_category");
 
       return res.status(200).json(myTree);
     } catch (error) {
