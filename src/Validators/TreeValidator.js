@@ -42,8 +42,8 @@ const update = validateRequest({
     name: z.string().optional(),
     description: z.string().optional(),
     location: z.string().optional(),
-    specie: z.string().optional(),
-    price: z.number().optional(),
+    total_quantity: z.any().optional(),
+    price: z.array(z.any()),
     archive: z.array(z.any()).optional(),
   }),
 });

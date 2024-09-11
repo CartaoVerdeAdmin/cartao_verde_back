@@ -45,27 +45,46 @@ class TreeController {
   async update(req, res) {
     try {
       const { id } = req.params;
-      const { name, location, description, specie, id_category, price, ...archivesObject } =
+      const { name, location, description, total_quantity, id_category, price, ...archivesObject } =
         req.body;
-
       const oldArchives = await TreeModel.findById(id).populate("archive");
       const archiveID = await ArchiveController.update({
         files: archivesObject.archive,
         name: name,
         oldArchives: oldArchives.archive,
       });
+      const myTree = await TreeModel.findById(id);
 
-      const myTree = await TreeModel.findByIdAndUpdate(id, {
-        name,
-        location,
-        description,
-        archive: archiveID,
-        price,
-        specie,
-        id_category,
-      });
+      if (total_quantity != 0) {
+        let newQuantity = total_quantity - myTree.total_quantity;
+
+        await TreeModel.updateOne(
+          { _id: id },
+          {
+            $inc: { available_quantity: newQuantity },
+            name,
+            location,
+            description,
+            total_quantity,
+            price,
+            id_category,
+          }
+        );
+      } else {
+        await TreeModel.updateOne(
+          { _id: id },
+          {
+            name,
+            location,
+            description,
+            price,
+            id_category,
+          }
+        );
+      }
       return res.status(200).json({});
     } catch (error) {
+      console.log(error);
       res.status(500).json({ message: "Error while updating tree", error: error.message });
     }
   }

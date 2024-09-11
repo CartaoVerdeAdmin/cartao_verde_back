@@ -8,7 +8,7 @@ class CertificateController {
   async create(req, res) {
     try {
       const { tree, id_user, years } = req.body;
-
+      console.log(years);
       const user = await UserModel.findById(id_user);
       if (!user) {
         return res.status(400).json({ message: "User ID do not exist" });
@@ -45,6 +45,7 @@ class CertificateController {
         return res.status(500).json({ message: "Error sending email", error: error.message });
       }
     } catch (error) {
+      console.log(error);
       res.status(500).json({ message: "Error while creating Certificate", error: error.message });
     }
   }

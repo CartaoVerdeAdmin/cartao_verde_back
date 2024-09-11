@@ -7,6 +7,7 @@ const CertificateSchema = new Schema(
     id_tree: {
       type: Schema.Types.ObjectId,
       ref: "trees",
+      unique: false,
       required: true,
     },
     id_user: {
