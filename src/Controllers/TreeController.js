@@ -68,6 +68,7 @@ class TreeController {
             total_quantity,
             price,
             id_category,
+            archive: archiveID,
           }
         );
       } else {
@@ -79,6 +80,7 @@ class TreeController {
             description,
             price,
             id_category,
+            archive: archiveID,
           }
         );
       }
