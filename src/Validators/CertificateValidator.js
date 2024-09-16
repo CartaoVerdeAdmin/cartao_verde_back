@@ -4,21 +4,21 @@ import mongoose from "mongoose";
 
 const treeSchema = z.object({
   _id: z.string().refine((value) => mongoose.isValidObjectId(value), { message: "Invalid ID" }),
-  archive: z.array(z.any()).optional(), 
+  archive: z.array(z.any()).optional(),
   description: z.string().optional(),
-  id_category: z.array(z.any()).optional(), 
+  id_category: z.array(z.any()).optional(),
   location: z.string().optional(),
   name: z.string().optional(),
-  price: z.number().optional(),
+  price: z.array(z.any()).optional(),
   specie: z.string().optional(),
+  quantity: z.any().optional(),
   __v: z.number().optional(),
 });
 
 const create = validateRequest({
   body: z.object({
-    tree: z
-      .array(treeSchema) 
-      .nonempty({ message: "The tree array must not be empty" }),
+    tree: z.array(treeSchema).nonempty({ message: "The tree array must not be empty" }),
+    years: z.any({ required_error: "The quantity required" }),
     id_user: z
       .string({ required_error: "The user ID is required" })
       .refine(mongoose.isValidObjectId, { message: "The ID is not valid" }),

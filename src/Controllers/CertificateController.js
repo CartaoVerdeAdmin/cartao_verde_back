@@ -7,17 +7,23 @@ import transporter from "../Services/smtp.js";
 class CertificateController {
   async create(req, res) {
     try {
-      const { tree, id_user } = req.body;
+      const { tree, id_user, years } = req.body;
+      console.log(years);
       const user = await UserModel.findById(id_user);
       if (!user) {
         return res.status(400).json({ message: "User ID do not exist" });
       }
-      for (const id of tree) {
+      for (const unit of tree) {
+        const currentTree = await TreeModel.findById(unit._id);
+        currentTree.available_quantity -= unit?.quantity;
+        await currentTree.save();
         await CertificateModel.create({
-          id_tree: id._id,
+          id_tree: unit._id,
           id_user: id_user,
-	        description:  "Default Description",
-          expiresAt: new Date(Date.now() + (3600 * 24 * 365 * 1000)),
+          description: "Default Description",
+          quantity: unit?.quantity,
+          years: years,
+          expiresAt: new Date(Date.now() + 3600 * 24 * 365 * 1000 * years),
         });
       }
       const treeNames = tree.map((tree) => tree.name).join(", ");
@@ -39,6 +45,7 @@ class CertificateController {
         return res.status(500).json({ message: "Error sending email", error: error.message });
       }
     } catch (error) {
+      console.log(error);
       res.status(500).json({ message: "Error while creating Certificate", error: error.message });
     }
   }

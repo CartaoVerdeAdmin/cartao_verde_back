@@ -1,13 +1,12 @@
-import UserModel from "../Models/UserModel.js";
 import TreeModel from "../Models/TreeModel.js";
 import ArchiveController from "./ArchiveController.js";
 import CategoryTreeModel from "../Models/CategoryTreeModel.js";
-import CertificateModel from "../Models/CertificateModel.js";
 
 class TreeController {
   async create(req, res) {
     try {
-      const { name, location, description, specie, id_category, price, ...archive } = req.body;
+      const { name, location, description, total_quantity, id_category, price, ...archive } =
+        req.body;
       const categoryTypeIds = await Promise.all(
         id_category.map(async (categoryName) => {
           const categoryType = await CategoryTreeModel.findOne({ name: categoryName });
@@ -22,7 +21,8 @@ class TreeController {
         location,
         description,
         price,
-        specie,
+        total_quantity,
+        available_quantity: total_quantity,
         id_category: categoryTypeIds,
         archive: archiveID,
       });
@@ -34,12 +34,7 @@ class TreeController {
 
   async read(req, res) {
     try {
-      const ids = await CertificateModel.find().select("id_tree");
-      const ids_trees = ids.map((id) => id.id_tree);
-      
-      const myTree = await TreeModel.find({ _id: { $nin: ids_trees } })
-        .populate("archive")
-        .populate("id_category");
+      const myTree = await TreeModel.find().populate("archive").populate("id_category");
 
       return res.status(200).json(myTree);
     } catch (error) {
@@ -50,27 +45,48 @@ class TreeController {
   async update(req, res) {
     try {
       const { id } = req.params;
-      const { name, location, description, specie, id_category, price, ...archivesObject } =
+      const { name, location, description, total_quantity, id_category, price, ...archivesObject } =
         req.body;
-
       const oldArchives = await TreeModel.findById(id).populate("archive");
       const archiveID = await ArchiveController.update({
         files: archivesObject.archive,
         name: name,
         oldArchives: oldArchives.archive,
       });
+      const myTree = await TreeModel.findById(id);
 
-      const myTree = await TreeModel.findByIdAndUpdate(id, {
-        name,
-        location,
-        description,
-        archive: archiveID,
-        price,
-        specie,
-        id_category,
-      });
+      if (total_quantity != 0) {
+        let newQuantity = total_quantity - myTree.total_quantity;
+
+        await TreeModel.updateOne(
+          { _id: id },
+          {
+            $inc: { available_quantity: newQuantity },
+            name,
+            location,
+            description,
+            total_quantity,
+            price,
+            id_category,
+            archive: archiveID,
+          }
+        );
+      } else {
+        await TreeModel.updateOne(
+          { _id: id },
+          {
+            name,
+            location,
+            description,
+            price,
+            id_category,
+            archive: archiveID,
+          }
+        );
+      }
       return res.status(200).json({});
     } catch (error) {
+      console.log(error);
       res.status(500).json({ message: "Error while updating tree", error: error.message });
     }
   }
@@ -78,6 +94,7 @@ class TreeController {
   async delete(req, res) {
     try {
       const { id } = req.params;
+
       const myTree = await TreeModel.findById(id);
       if (!myTree) {
         return res.status(404).json({ message: "Tree not found" });
