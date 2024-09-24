@@ -5,20 +5,22 @@ import CertificateModel from "../../../Models/CertificateModel.js";
 export const startCertificateExpirationJob = () => {
   cron.schedule("0 0 * * *", async () => {
     try {
+      
       const currentDate = new Date();
-      const expiredCertificates = await CertificateModel.find({ expiresAt: { $lt: currentDate } });
+      const expiredCertificates = await CertificateModel.find({ finalDate: { $lt: currentDate } });
       if (expiredCertificates.length === 0) {
         return;
       }
       await Promise.all(
         expiredCertificates.map(async (cert) => {
-          const tree = await TreeModel.findById(cert.id_tree);
-
-          if (tree) {
-            tree.available_quantity += cert.quantity;
-            await tree.save();
-          }
-
+         
+          const myTree = await TreeModel.updateOne(
+            { _id: cert.id_tree },
+            {
+              $inc: { available_quantity: cert.quantity },
+            }
+          );
+          
           await CertificateModel.findByIdAndDelete(cert._id);
         })
       );

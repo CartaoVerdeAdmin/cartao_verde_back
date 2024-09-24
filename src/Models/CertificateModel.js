@@ -22,10 +22,9 @@ const CertificateSchema = new Schema(
       type: Number,
       required: true,
     },
-    expiresAt: {
+    finalDate: {
       type: Date,
       required: true,
-      expires: 0,
     },
     years: {
       type: Number,
