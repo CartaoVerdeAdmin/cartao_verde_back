@@ -20,7 +20,7 @@ export const startCertificateExpirationJob = () => {
               $inc: { available_quantity: cert.quantity },
             }
           );
-          
+        
           await CertificateModel.findByIdAndDelete(cert._id);
         })
       );
