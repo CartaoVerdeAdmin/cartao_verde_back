@@ -14,7 +14,7 @@ export const startCertificateExpirationJob = () => {
       await Promise.all(
         expiredCertificates.map(async (cert) => {
          
-          const myTree = await TreeModel.updateOne(
+           await TreeModel.updateOne(
             { _id: cert.id_tree },
             {
               $inc: { available_quantity: cert.quantity },
