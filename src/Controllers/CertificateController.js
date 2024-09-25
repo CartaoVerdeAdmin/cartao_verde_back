@@ -3,7 +3,7 @@ import UserModel from "../Models/UserModel.js";
 import TreeModel from "../Models/TreeModel.js";
 import moment from "moment";
 import transporter from "../Services/smtp.js";
-import formatExpiresAt from "Utils/general/formatExpiresAt.js";
+import formatExpiresAt from "../Utils/general/formatExpiresAt.js";
 class CertificateController {
   async create(req, res) {
     try {
