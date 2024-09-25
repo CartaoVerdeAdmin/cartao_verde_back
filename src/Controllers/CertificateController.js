@@ -3,12 +3,11 @@ import UserModel from "../Models/UserModel.js";
 import TreeModel from "../Models/TreeModel.js";
 import moment from "moment";
 import transporter from "../Services/smtp.js";
-
+import formatExpiresAt from "Utils/general/formatExpiresAt.js";
 class CertificateController {
   async create(req, res) {
     try {
       const { tree, id_user, years } = req.body;
-      console.log(years);
       const user = await UserModel.findById(id_user);
       if (!user) {
         return res.status(400).json({ message: "User ID do not exist" });
@@ -23,9 +22,10 @@ class CertificateController {
           description: "Default Description",
           quantity: unit?.quantity,
           years: years,
-          expiresAt: new Date(Date.now() + 3600 * 24 * 365 * 1000 * years),
+          finalDate: new Date( formatExpiresAt(24*3600*365 *years) ),
         });
       }
+      
       const treeNames = tree.map((tree) => tree.name).join(", ");
       const mailOptions = {
         from: process.env.EMAIL_USER,
