@@ -9,22 +9,26 @@ class CertificateController {
     try {
       const { tree, id_user, years } = req.body;
       const user = await UserModel.findById(id_user);
-      if (!user) {
+    
+      if (!user)     {
         return res.status(400).json({ message: "User ID do not exist" });
       }
-      for (const unit of tree) {
+      const promises = tree.map(async (unit) => {
         const currentTree = await TreeModel.findById(unit._id);
         currentTree.available_quantity -= unit?.quantity;
         await currentTree.save();
-        await CertificateModel.create({
+        
+        return CertificateModel.create({
           id_tree: unit._id,
           id_user: id_user,
           description: "Default Description",
           quantity: unit?.quantity,
           years: years,
-          finalDate: new Date( formatExpiresAt(24*3600*365 *years) ),
+          finalDate: new Date(formatExpiresAt(24 * 3600 * 365 * years)),
         });
-      }
+      });x
+      
+      await Promise.all(promises);
       
       const treeNames = tree.map((tree) => tree.name).join(", ");
       const mailOptions = {

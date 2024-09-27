@@ -34,7 +34,7 @@ class TreeController {
 
   async read(req, res) {
     try {
-      const myTree = await TreeModel.find().populate("archive").populate("id_category");
+      const myTree = await TreeModel.find({ available_quantity: { $gt: 0 } }).populate("archive").populate("id_category");
 
       return res.status(200).json(myTree);
     } catch (error) {

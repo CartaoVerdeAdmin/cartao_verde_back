@@ -23,6 +23,7 @@ if (isDevEnvironment) app.use(morgan("dev"));
 app.use(routes);
 
 // Non existing routes
+
 app.use("*", (req, res, next) => {
   next(new NotFoundError(`Route '${req.baseUrl}' not found`));
 });
