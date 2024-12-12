@@ -40,6 +40,12 @@ class CertificateController {
         \nSegue em anexo seu certificado.
         \nAgradecemos sua compra!
         \n\nAtenciosamente, Equipe Cartão Verde`,
+        attachments: [
+          {
+            filename: 'certificado.pdf',
+            path: '/path/to/certificate.pdf', 
+          },
+        ],
       };
 
       try {
