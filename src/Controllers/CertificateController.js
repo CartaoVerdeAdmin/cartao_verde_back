@@ -4,6 +4,8 @@ import TreeModel from "../Models/TreeModel.js";
 import moment from "moment";
 import transporter from "../Services/smtp.js";
 import formatExpiresAt from "../Utils/general/formatExpiresAt.js";
+import generatePDF from "../Services/generateCertificate/generate.js";
+
 class CertificateController {
   async create(req, res) {
     try {
@@ -26,13 +28,17 @@ class CertificateController {
           years: years,
           finalDate: new Date(formatExpiresAt(24 * 3600 * 365 * years)),
         });
-      });x
+      });
       
       await Promise.all(promises);
+
       
       const treeNames = tree.map((tree) => tree.name).join(", ");
+      const pathPDF = await generatePDF(user, tree).then((pdfPath) => {
+        return pdfPath;
+      });      
       const mailOptions = {
-        from: process.env.EMAIL_USER,
+        from: `${process.env.EMAIL_USER}`,
         to: `${user.email}`,
         subject: `Compra de Certificado da Árvore ${treeNames}`,
         text: `Olá, ${user.name}
@@ -43,7 +49,7 @@ class CertificateController {
         attachments: [
           {
             filename: 'certificado.pdf',
-            path: '/path/to/certificate.pdf', 
+            path: pathPDF, 
           },
         ],
       };
