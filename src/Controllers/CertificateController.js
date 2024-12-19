@@ -34,7 +34,7 @@ class CertificateController {
 
       
       const treeNames = tree.map((tree) => tree.name).join(", ");
-      const pathPDF = await generatePDF(user, tree).then((pdfPath) => {
+      const pathPDF = await generatePDF(user, tree, years).then((pdfPath) => {
         return pdfPath;
       });      
       const mailOptions = {

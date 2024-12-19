@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import { TranslateCertificate } from "./Translations.js";
 
-async function generatePDF(user, trees) {
+async function generatePDF(user, trees, years) {
   const dateCertificate = new Date().toLocaleDateString();
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
@@ -31,6 +31,7 @@ async function generatePDF(user, trees) {
     .replace('{{Text1Pt2}}', translations.Text1Pt2)
     .replace('{{Text1Pt22}}', translations.Text1Pt22)
     .replace('{{Text1Pt3}}', translations.Text1Pt3)
+    .replace('{{Years}}', years)
     .replace('{{Text1Pt4}}', translations.Text1Pt4)
     .replace('{{Name}}', user.name)
     .replace('{{TreeLocation}}', tree.location)
