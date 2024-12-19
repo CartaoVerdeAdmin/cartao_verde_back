@@ -4,7 +4,7 @@ import TreeModel from "../Models/TreeModel.js";
 import moment from "moment";
 import transporter from "../Services/smtp.js";
 import formatExpiresAt from "../Utils/general/formatExpiresAt.js";
-import generatePDF from "../Services/generateCertificate/generate.js";
+import {generatePDF,  deletePDF } from "../Services/generateCertificate/generate.js";
 
 class CertificateController {
   async create(req, res) {
@@ -54,8 +54,11 @@ class CertificateController {
         ],
       };
 
+      
+
       try {
-        transporter.sendMail(mailOptions);
+        await transporter.sendMail(mailOptions);
+        deletePDF(pathPDF);
         return res.status(200).json({ message: "Email successfully sent" });
       } catch (error) {
         return res.status(500).json({ message: "Error sending email", error: error.message });

@@ -59,4 +59,18 @@ async function generatePDF(user, trees) {
   return pdfPath;
 }
 
-export default generatePDF;
+function deletePDF(pdfPath) {
+    try {
+      if (fs.existsSync(pdfPath)) {
+        fs.unlinkSync(pdfPath);
+        console.log(`Arquivo ${pdfPath} foi deletado com sucesso.`);
+      } else {
+        console.log(`Arquivo ${pdfPath} não encontrado.`);
+      }
+    } catch (error) {
+      console.error(`Erro ao deletar o arquivo: ${error.message}`);
+    }
+  }
+  
+export { generatePDF, deletePDF };
+
