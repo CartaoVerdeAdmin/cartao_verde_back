@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Certificado</title>
+  <style>
+    body {
+      font-family: "Arial", sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f5f5f5;
+      color: black;
+    }
+
+    .certificated {
+      display: block;
+      position: absolute;
+      width: 100%;
+      max-width: 21cm;
+      height: 297mm; 
+      box-sizing: border-box;
+      border: 8px solid #4caf50;
+      box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.2);
+      padding: 0;
+      height: fit-content;
+    }
+
+    @media screen and (max-width: 768px) {
+      .certificated {
+        padding: 2.5em;
+        margin-top: -500px;
+      }
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 2.5em;
+      color: #2e7d32;
+      margin-bottom: 0.5em;
+      font-family: "Georgia", serif;
+    }
+
+    h2 {
+      text-align: center;
+      font-size: 2em;
+      color: #1b5e20;
+      margin: 0.5em 0;
+      font-family: "Times New Roman", Times, serif;
+    }
+
+    p {
+      text-align: center;
+      font-size: 1.2em;
+      color: #555555;
+      margin: 0.5em 0;
+      line-height: 1.5;
+    }
+
+    .heading {
+      font-size: 1.1em;
+      color: #333333;
+      margin: 1em 0;
+      line-height: 1.5;
+      padding: 0 2em;
+      border-top: 1px solid #4caf50;
+      border-bottom: 1px solid #4caf50;
+    }
+
+    .text {
+      font-size: 1em;
+      color: #333333;
+      margin: 1em 0;
+      line-height: 1.5;
+      padding: 0 2em;
+    }
+
+    .footer {
+      font-size: 1em;
+      color: #333333;
+      margin: 1em 0;
+      padding: 0 2em;
+      border-top: 1px solid #4caf50;
+      text-align: left;
+    }
+
+  </style>
+</head>
+<body>
+    
+  <div class="certificated" id="certificated-{{card._id}}">
+    <h1>{{CertificateTitle1}}</h1>
+    <h1>{{CertificateTitle2}}</h1>
+
+    <div class="heading">
+      <p><strong>{{ClientName}}</strong> {{Name}}</p>
+      <p><strong>{{CertificateNumber}}</strong> {{Number}}</p>
+      <p><strong>{{EmissionDate}}</strong> {{dateCertificate}}</p>
+      <p><strong>{{Location}}</strong>{{TreeLocation}} </p>
+    </div>
+
+    <p>{{Text1Pt1}} {{Name}} {{Text1Pt2}}  {{Text1Pt22}} {{TreeLocation}}</p>
+    <p>{{Text1Pt3}} {{Years}} {{Text1Pt4}}</p>
+    <p>{{Text2}}</p>
+    <p>{{Concession}}</p>
+    <p>{{ConcessionText}}</p>
+
+    <div class="footer">
+      <p>{{Signature}}</p>
+      <p>{{Representant}}</p>
+      <p>{{Contact}}</p>
+      <p>{{Email}}</p>
+      <p>{{PhoneNumber}}</p>
+      <p>{{Website}}</p>
+    </div>
+  </div>
+</body>
+</html>
